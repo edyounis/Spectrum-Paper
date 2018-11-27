@@ -1,1 +1,132 @@
-\section{Spectre Variants}
+\section{Speculative Attack Replication}
+
+* Orig goal was to implement Spectre-v1 and RSB. However, ended up implementing v2.
+
+* Put code for implementation on the bottom of the paper like spectre
+
+* BOOM and RISC-V Implementation Deatils
+    * No clflush
+        * Implemented hand made clflush
+            * Detail implementation of clflush
+            * Random cache replacement
+            * Large \$ array structure vs just prespecifying the address vs just having a \$ size and then doing rollover math based off the location that the memory is allocated to
+    * RSB not working
+        * Disconnected in current working version of the code base
+    * TAGE BPU
+        * TAGE BPU is not working properly
+    * No HPMs
+        * Made it hard to implement BPU fixes
+    * No deep cache heirarchy
+        * no l2, instead uses infinite \$ after the l1. loads resolve before the speculation window ends. thus need to expand speculation window.
+          this is done using fdiv since boom has a floating point unit.
+    * Other bugs associated with BPu
+        * Corner case in which if the 3rd BR in fetch packet is a BR then the 4th would also branch after resolution
+
+* Spectre-v1
+    * Based around Spectre paper PoC
+        * Used same strcutre of running the attack with multiple rounds, hashing the idx, etc
+
+* Spectre-v2
+    * Uses a similar structure as v1 but instead uses jalr
+
+To our knowledge, speculative attacks have not been implemented on BOOM yet. Thus,
+this project was focused on demonstrating that these attacks could occur by showing
+simple proof of concept code for the attacks. Initially, the goal was to implement
+Spectre-v1, otherwise known as Bounds Check Bypass, and the Return Stack Buffer attack.
+However, due to implementation caveats, we shifted from demonstrating the Return Stack 
+Buffer attack to showing Spectre-v2, otherwise known as the Branch Target Injection 
+attack.
+
+\subsection{Implementation Details}
+
+\subsection{Bounds Check Bypass Attack}
+
+\subsubsection{Overview}
+
+This attack exploits the functionality of conditional branches to leak a secret byte 
+when and attacker resides in the same address space. The attack works by a 
+malicious entity training a conditional branch within victim code to predict the branch
+to be taken in a certain direction, then during the attack round, the malicious entity
+gives a value to the victim that is used to retrieve the index during the speculative
+execution. This particular attack variant uses a cache side channel attack to leak the
+information by having the secret value index into another array that the attacker has
+access to after the secret was accessed. The psuedocode in \ref{code:spectre-v1-pseudo}
+demonstrates the basic principle of the attack using a C-like syntax.
+
+\begin{lstlisting}[caption=Psuedocode of Bounds Check Bypass Attack]
+char* secret[] = "SECRET_VALUE"
+char  attackArray[256 * CACHE_BLOCK_SZ]
+
+void victim(idx){
+  if (idx < secret.size()){
+    attackArray[secret[idx] * CACHE_BLOCK_SZ]
+  }
+}
+
+int main(void){
+  
+  // Training
+  while (TRAINING_ROUNDS){
+    victim(idx)
+  }
+
+  // Attack. Read secret value
+  victim(outOfBoundsIdx)
+
+  // Probe array to check for hit
+  for (i -> 0 until 256){
+    t0 = time()
+    attackArray[i * CACHE_BLOCK_SZ]
+    t1 = time()
+  }
+}
+\end{lstlisting}\label{code:spectre-v1-pseudo}
+
+\subsubsection{BOOM Implementation}
+
+\subsection{Branch Target Injection}
+
+\subsubsection{Overview}
+
+This attack exploits the functionality of the Branch Target Buffer in predicting the outcome
+of jump and link instructions that use the BTB to predict where it will branch. Specifically, 
+the attack works by a malicious entity traning a jump and link instruction to default point to 
+the victim code. Then during the attack run, the jump is supposed to go to a wanted function,
+but instead due to the BTB pointing to the original victim code, it speculatively jumps to the
+victim code and executes it. This particular attack variant also leaks information through the
+cache side channel mentioned in \ref{ref:Bounds Check Bypass Attack}. The psuedocode in 
+\ref{code:spectre-v2-psuedo} demonstrates the basic principle of the attack using a C-like syntax.
+
+\begin{lstlisting}[caption=Psuedocode of Bounds Check Bypass Attack]
+char* secret[] = "SECRET_VALUE"
+char  attackArray[256 * CACHE_BLOCK_SZ]
+
+void otherFunction(void){
+  // Other functionality    
+}
+
+void victim(idx){
+  attackArray[secret[idx] * CACHE_BLOCK_SZ]
+}
+
+int main(void){
+  
+  // Training
+  while (TRAINING_ROUNDS){
+    jump(victim)
+  }
+
+  // Attack. Read secret value
+  argument = attackIdx
+  jump(otherFunction)
+
+  // Probe array to check for hit
+  for (i -> 0 until 256){
+    t0 = time()
+    attackArray[i * CACHE_BLOCK_SZ]
+    t1 = time()
+  }
+}
+\end{lstlisting}\label{code:spectre-v1-pseudo}
+
+\subsubsection{BOOM Implementation}

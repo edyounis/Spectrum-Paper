@@ -1,2 +1,22 @@
 \begin{abstract}
+    With the discovery of speculative execution exploitative attacks the computer
+    architecture community is rethinking the architecture boundry and how the
+    attacks can be mitigated. This project aims to tackle this new set of problems
+    by providing three different outcomes; a comphrehensive taxomony for attacks
+    and defenses, replication of speculative attacks on an open-source processor,
+    and a mitigation developed for some of these attacks on an open-source
+    processor.
+    
+    We have categorizaed the variety of attacks based on if the attacks are 
+    architecturally legal and the defenses based on their types. Additionally, 
+    for the taxonomy we have mapped mitigations to the proper attacks that they 
+    potentially cover. Using the Berkeley Out-Of-Order Machine, we have 
+    reimplemented Spectre Variants 1 and 2 that target the L1 Data Cache. We 
+    achieve a leakage rate of around 114 bytes per sec with a 100MHz processor 
+    frequency. For mitigating these speculative load type of attacks, we 
+    implemented a speculative buffer that resides within the MSHRs. Based on
+    preliminary results, it achieves a 2151 score on the Dhrystone benchmark
+    resulting in a 1\% performance decrease compared to the baseline. Additionally,
+    synthesizing around a 45nm process shows a 3\% area increase and 3\% lower clock
+    impact.
 \end{abstract}
