@@ -1,34 +1,5 @@
 \section{Speculative Attack Replication}
 
-* Orig goal was to implement Spectre-v1 and RSB. However, ended up implementing v2.
-
-* Put code for implementation on the bottom of the paper like spectre
-
-* BOOM and RISC-V Implementation Deatils
-    * No clflush
-        * Implemented hand made clflush
-            * Detail implementation of clflush
-            * Random cache replacement
-            * Large \$ array structure vs just prespecifying the address vs just having a \$ size and then doing rollover math based off the location that the memory is allocated to
-    * RSB not working
-        * Disconnected in current working version of the code base
-    * TAGE BPU
-        * TAGE BPU is not working properly
-    * No HPMs
-        * Made it hard to implement BPU fixes
-    * No deep cache heirarchy
-        * no l2, instead uses infinite \$ after the l1. loads resolve before the speculation window ends. thus need to expand speculation window.
-          this is done using fdiv since boom has a floating point unit.
-    * Other bugs associated with BPu
-        * Corner case in which if the 3rd BR in fetch packet is a BR then the 4th would also branch after resolution
-
-* Spectre-v1
-    * Based around Spectre paper PoC
-        * Used same strcutre of running the attack with multiple rounds, hashing the idx, etc
-
-* Spectre-v2
-    * Uses a similar structure as v1 but instead uses jalr
-
 To our knowledge, speculative attacks have not been implemented on BOOM yet. Thus,
 this project was focused on demonstrating that these attacks could occur by showing
 simple proof of concept code for the attacks. Initially, the goal was to implement
@@ -39,9 +10,56 @@ attack.
 
 \subsection{Implementation Details}
 
-\subsection{Bounds Check Bypass Attack}
+This project utilizes the Berkeley Out-of-Order Machine (BOOM), a synthesizable and 
+parameterizable open source RV64G RISC-V core written in the Chisel hardware construction language. 
+Since the core is open source, it provides the team insight into the inner working of the core
+in order to replicate the attack quickly. However, despite this there were a couple of issues 
+relating to both the core and RISC-V that needed to be worked around in order to 
+replicate the attacks since the core is transitioning to a more stable version.
 
-\subsubsection{Overview}
+\subsubsection{Handmade clflush}
+
+One feature of normal x86 and ARM processors that is not available in RV64G is the precense of
+a {\tt clflush}, cache line flush, instruction. This instruction is extremely important for 
+cache side channel attacks since it enables a timing leak depending on if the cache line is
+present in the cache heirarchy or not. Therefore, a workaround was made to implement a 
+L1 cache flush function. This function takes in an address and size in bytes, and flushes
+all sets starting from that address until the size. This is done by having an extra array, 
+a multiple of the L1 cache size, that is indexed into to evict a particular line. Since we are
+not able to evict a particular line ({\tt clflush} is able to selectively remove a line within a set),
+this function instead evicts the entire set to ensure that the line referenced is evicted. Evicting
+the entire set is done by hitting the set {\tt N * L1Way} amount, where {\tt N} is the large enough number to 
+account for the random cache replacement, so that all lines are evicted.
+\subsubsection{BOOM Branch Predictor Unit}
+
+The BOOM Branch Predictor Unit (BPU), is split into a single-cycle "next-line predictor" (NLP) and a
+slower but more complicated "backing predictor" (BP). The NLP contains the Branch Target Buffer (BTB) 
+where more recent branches are cached alongside their target, a tag of the PC, and more. Additionally,
+the NLP contains the Return Stack Buffer (RSB) which holds the return pointer for a ret instruction. The BP
+consists of a large predictor such as TAGE or GShare which makes a more accurate prediction based on
+a larger view of the branch history. From the time that we were working on this project, the BOOM 
+processor had multiple issues with the TAGE BP, RSB, and other small BPU bugs. For simplicity and 
+to avoid bugfixing the core instead of working on the attacks, we switched to using a GShare BP
+having a global history of 23 bits and history table containing 4096 counters. This was significantly
+less buggy while also providing a simpler approach to training the BPU. Additionally, when trying to
+implement the RSB attack, the RSB was disabled in the code resulting in all ret's to speculate to
+the next PC instead of the target PC. Re-enabling the RSB lead to multiple other BPU bugs, so we
+ending up keeping the RSB disabled and instead implemented another attack which did not use the RSB.
+
+\subsubsection{BOOM Memory System}
+
+BOOM's memory system utilizes the RocketChip L1 Data Cache and connects to the rest of the RocketChip
+infrastructure. However, within the RocketChip tile there is no implementation of a L2 cache, instead
+there is a notion of a infinite memory after the L1 cache. This unique memory heirarchy still functions
+properly, however when implementing the different attacks, it was noticed that the speculation window
+was not large enough due to memory latencies not being sufficiently large. This is because the
+dependent load causing speculation would resolve quickly, resulting in other speculative loads to not
+finish. Therefore, a workaround was made to use BOOM's floating point unit to expand the speculation 
+window through using {\tt fdiv} instructions. When used on the dependency, this would allow the speculation
+to run for a longer time.
+
+
+\subsection{Bounds Check Bypass Attack}
 
 This attack exploits the functionality of conditional branches to leak a secret byte 
 when and attacker resides in the same address space. The attack works by a 
@@ -53,7 +71,7 @@ information by having the secret value index into another array that the attacke
 access to after the secret was accessed. The psuedocode in \ref{code:spectre-v1-pseudo}
 demonstrates the basic principle of the attack using a C-like syntax.
 
-\begin{lstlisting}[caption=Psuedocode of Bounds Check Bypass Attack]
+\begin{lstlisting}[style=column-code, caption=Psuedocode of Bounds Check Bypass Attack]
 char* secret[] = "SECRET_VALUE"
 char  attackArray[256 * CACHE_BLOCK_SZ]
 
@@ -82,11 +100,16 @@ int main(void){
 }
 \end{lstlisting}\label{code:spectre-v1-pseudo}
 
-\subsubsection{BOOM Implementation}
+The BOOM implementation of this attack echos the psuedocode closely. It consists of 3
+different parts. First, a tally buffer is cleared before reading a secret byte. Next the
+array to be probed is evicted from the cache, and the attack trains the BPU to enter the 
+bounds protected area. Note that in this section, there is an extra loop that puts the 
+branch history in a consistent state since the branch history is hashed on update. Finally,
+the attacker code reads out the probing array through using the {\tt rdcycle} instruction and 
+checking if the result is under a hand tuned cache threshold. The full code is available at
+\ref{ref:Appendix ?}.
 
 \subsection{Branch Target Injection}
-
-\subsubsection{Overview}
 
 This attack exploits the functionality of the Branch Target Buffer in predicting the outcome
 of jump and link instructions that use the BTB to predict where it will branch. Specifically, 
@@ -97,7 +120,7 @@ victim code and executes it. This particular attack variant also leaks informati
 cache side channel mentioned in \ref{ref:Bounds Check Bypass Attack}. The psuedocode in 
 \ref{code:spectre-v2-psuedo} demonstrates the basic principle of the attack using a C-like syntax.
 
-\begin{lstlisting}[caption=Psuedocode of Bounds Check Bypass Attack]
+\begin{lstlisting}[style=column-code, caption=Psuedocode of Bounds Check Bypass Attack]
 char* secret[] = "SECRET_VALUE"
 char  attackArray[256 * CACHE_BLOCK_SZ]
 
@@ -105,9 +128,7 @@ void otherFunction(void){
   // Other functionality    
 }
 
-void victim(idx){
-  attackArray[secret[idx] * CACHE_BLOCK_SZ]
-}
+void victim(idx){ attackArray[secret[idx] * CACHE_BLOCK_SZ] }
 
 int main(void){
   
@@ -129,4 +150,8 @@ int main(void){
 }
 \end{lstlisting}\label{code:spectre-v1-pseudo}
 
-\subsubsection{BOOM Implementation}
+The BOOM implementation of this attack is very similar to the implementation given for
+the bounds check bypass attack listed in \ref{ref:Bounds Check Bypass}. One of the main differences
+for this attack is that the attacker has to change both the address of the function and the
+index of the array access in the victim for the training. Additionally, the {\tt fdiv} manipulation is 
+done in the main function versus the victim code.
