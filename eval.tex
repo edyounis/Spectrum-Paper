@@ -1,6 +1,7 @@
 \section{Evaluations}
 
 \begin{table}
+\centering
 \caption{Spectulative Attack Results}
 \label{tab:spec-attack-results}
 \begin{tabular}{@{} *4l @{}} \toprule
@@ -12,6 +13,7 @@
 \end{table}
 
 \begin{table}
+\centering
 \caption{BOOM Core Parameters}
 \label{tab:boom-core-params}
 \begin{tabular}{@{} *2l @{}} \toprule
@@ -32,6 +34,7 @@
 \end{table}
 
 \begin{table}
+\centering
 \caption{Attack Parameters}
 \label{tab:attack-params}
 \begin{tabular}{@{} *2l @{}} \toprule
@@ -42,7 +45,7 @@
     Cache flush hits on same set & 4 * L1\_WAYS \\
     GShare Counter Table Entries & 4096 \\ \bottomrule
 \end{tabular}
-\end{table}
+\end{table} 
 
 \begin{tikzpicture}
 \begin{axis}[
@@ -134,7 +137,9 @@ cycle-accurate, FPGA-accelerated scale-out computer system simulation platform.
 
 \subsection{Replicating Speculative Attacks}
 
-Overall results of the replications are promising with \ref{tab:spec-attack-results}
+Overall, the attacks were able to be replicated on the BOOM microarchitecture. A printout
+of the Bounds Check Bypass attack is shown in \ref{ref:spec-attack-printout}. Additionally,
+results of the replications are promising with \ref{tab:spec-attack-results}
 showing the result of the two respective attacks. The cycle times were measured from
 before the tally array clear to right before the printf of the results. Thus, this
 measurement takes into account the clearing of the tally array before each run, the
@@ -143,5 +148,35 @@ time to probe the attacker array. The results are close to each other because th
 shares similar structure. The main differences are around the setup of the fdiv manipulation
 and the extra arithmatic in the Branch Target Injection case where you have to calculate
 both the index and the address to pass into the function. 
+
+\begin{lstlisting}[style=column-code, caption=Printout of Bounds Check Bypass Attack]
+want(!) =?= 1.(!) 2.(^A)
+want(") =?= 1.(") 2.(^A)
+want(#) =?= 1.(#) 2.( C)
+want(T) =?= 1.(T) 2.(^A)
+want(h) =?= 1.(h) 2.(i)
+want(i) =?= 1.(i) 2.(>)
+want(s) =?= 1.(s) 2.(^D)
+want(I) =?= 1.(I) 2.(^D)
+want(s) =?= 1.(s) 2.( ^L)
+want(T) =?= 1.(T) 2.(Ò)
+want(h) =?= 1.(h) 2.(^F)
+want(e) =?= 1.(e) 2.()
+want(B) =?= 1.(B) 2.(<9f>)
+want(a) =?= 1.(a) 2.(^B)
+want(b) =?= 1.(b) 2.(^A)
+want(y) =?= 1.(y) 2.()
+want(B) =?= 1.(B) 2.(¡)
+want(o) =?= 1.(o) 2.(^H)
+want(o) =?= 1.(o) 2.(4)
+want(m) =?= 1.(m) 2.(k)
+want(e) =?= 1.(e) 2.(^C)
+want(r) =?= 1.(r) 2.(^A)
+want(T) =?= 1.(T) 2.(^C)
+want(e) =?= 1.(e) 2.(^O)
+want(s) =?= 1.(s) 2.(^D)
+want(t) =?= 1.(t) 2.(^A)
+\end{lstlisting}\label{ref:spec-attack-printout}
+
 
 \subsection{Spec Buffer}

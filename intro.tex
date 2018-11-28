@@ -1,27 +1,27 @@
 \section{Introduction}
-Ever since the disclosure of Spectre and Meltdown at the beginning of 2018, there has been a large number of attacks targeting speculative microarchitectural state in out-of-order processors [cite].%
-%
-Each of these attacks is able to exploit the shared state of the processor between a victim process/thread and a malicious process/thread.%
-%
-While classifications have been developed for cache-based and for timing-based side-channel attacks [cite], a general taxonomy for the space of speculative execution attacks has not been formalized.%
-%
-Currently, these attacks have only been broadly identified as variants of Spectre.%
-%
-A well-devised taxonomy would inform not only the categorization of new attacks but also the development of hardware mitigations for these attacks.%
-%
-A complete categorization system would help hardware researchers identify general mitigations for broad categories of vulnerabilities, instead of targeted fixes for specific attacks.%
-%
 
-Additionally, the BOOM [cite] open-source RISC-V microarchitecture has not been exposed to these types of attacks yet.%
-%
-BOOM (The Berkeley Out-of-Order Machine) is a generic implementation of a speculative out-of-order microarchitecture that employs many of the same features as the proprietary systems targeted by published attacks.%
-%
-Generic, open-source implementations of attacks and their mitigation strategies would provide a common foundation for the development of defenses for speculative execution attacks.%
-%
-
-By attacking an open-source machine with Spectre, researchers can not only gain more insight into the malicious attack but also attempt to mitigate the attack on a shared, open platform.%
-%
-Moreover, this project is hoped to unify and guide the attack mitigation process.%
-%
-With an attack taxonomy and an open-source microarchitecture, a newly proposed mitigation technique can easily target a class of attacks as informed by the taxonomy.
+Ever since the disclosure of Spectre and Meltdown at the beginning of 2018, there has
+been a large number of attacks targeting speculative microarchitectural state in
+out-of-order processors [cite]. Each of these attacks is able to exploit the shared
+state of the processor between a victim process/thread and a malicious process/thread.
+While classifications have been developed for cache-based and for timing-based 
+side-channel attacks [cite], a general taxonomy for the space of speculative execution
+attacks has not been formalized. Currently, these attacks have only been broadly 
+identified as variants of Spectre. A well-devised taxonomy would inform not only the 
+categorization of new attacks but also the development of hardware mitigations for 
+these attacks. A complete categorization system would help hardware researchers 
+identify general mitigations for broad categories of vulnerabilities, instead of 
+targeted fixes for specific attacks. Additionally, the BOOM [cite] open-source RISC-V
+microarchitecture has not been exposed to these types of attacks yet. BOOM (The
+Berkeley Out-of-Order Machine) is a generic implementation of a speculative 
+out-of-order microarchitecture that employs many of the same features as the 
+proprietary systems targeted by published attacks. Generic, open-source 
+implementations of attacks and their mitigation strategies would provide a common 
+foundation for the development of defenses for speculative execution attacks.
+By attacking an open-source machine with Spectre, researchers can not only gain more 
+insight into the malicious attack but also attempt to mitigate the attack on a shared,
+open platform. Moreover, this project is hoped to unify and guide the attack 
+mitigation process. With an attack taxonomy and an open-source microarchitecture, a 
+newly proposed mitigation technique can easily target a class of attacks as informed 
+by the taxonomy.
 
