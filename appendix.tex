@@ -1,4 +1,5 @@
-\section{Appendix}
+\appendix
+\section{Bounds Check Bypass BOOM Proof of Concept}
 
 In \ref{code:boom-spectre-v1} is the implementation of the Bound Check Bypass attack
 on BOOM. Without speculation, the array2 access in the victimFunc would be only accessed
@@ -7,3 +8,6 @@ the secret value during the attacker run.
 
 \onecolumn
 \lstinputlisting[style=full-code, caption=BOOM Proof of Concept code of Bounds Check Bypass Attack]{condBranchMispred.c}
+\label{code:boom-spectre-v1}
+
+\section{Other appendix}

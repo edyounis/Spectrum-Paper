@@ -8,7 +8,7 @@ is susceptible to, future work for this can focus on speeding up the attacks.
 One of the mechanisms to speed up both attacks is the hand made L1 cache flush function
 created. The current implementation uses a large array to index into to evict a particular
 set in the cache. Another approach is to have just the L1 cache size amount of data and use 
-arithmatic to figure out where in this smaller block to access (note: remember that when
+arithmetic to figure out where in this smaller block to access (note: remember that when
 you have an array statically allocated, it doesn't have to start at set 0). Additionally,
 another approach to speeding up the function is to prespecify the addresses that need to be
 accessed to clear the cache and use that to clear the set. 
@@ -16,9 +16,9 @@ accessed to clear the cache and use that to clear the set.
 In addition to fixing the access of the array in the cache flush function, another
 improvement can be to tweak the different parameters of the attack. This includes
 both the attack parameters listed in \ref{tab:attack-params} but also the amount of
-hits to the same set in the cache function. POtentially, the amount of rounds on the
+hits to the same set in the cache function. Potentially, the amount of rounds on the
 same bytes and training rounds can be reduced to improve the speed of the attack.
-These can be adjusted in conjuction with the cache flush hits on the same set so even though the 
+These can be adjusted in conjunction with the cache flush hits on the same set so even though the 
 random cache replacement policy may not clear all the ways of the set, but the amount of rounds on
 the same byte might remove the false positives.
 
@@ -43,7 +43,7 @@ better synth - use sram
 \subsection{BOOM Improvements}
 
 Future work for the project also involves bringing BOOM to a more stable version. Throughout
-the project, a multitude of bugs were found both in the frontend (fetch, bpu, etc) and the 
+the project, a multitude of bugs were found both in the front-end (fetch, bpu, etc) and the 
 load/store unit that the team had to work around. With these fixed, not only will performance
 of the core improve, but other replication and modifications to the core will be easier since
 the base core will be stable.

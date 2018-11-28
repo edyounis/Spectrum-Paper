@@ -2,7 +2,7 @@
 
 \begin{table}
 \centering
-\caption{Spectulative Attack Results}
+\caption{Speculative Attack Results}
 \label{tab:spec-attack-results}
 \begin{tabular}{@{} *4l @{}} \toprule
     &                        & \multicolumn{2}{l}{Bytes per Second} \\
@@ -146,7 +146,7 @@ measurement takes into account the clearing of the tally array before each run, 
 multiple rounds of training for the BPU, the single attack run on the victim, and the
 time to probe the attacker array. The results are close to each other because the code
 shares similar structure. The main differences are around the setup of the fdiv manipulation
-and the extra arithmatic in the Branch Target Injection case where you have to calculate
+and the extra arithmetic in the Branch Target Injection case where you have to calculate
 both the index and the address to pass into the function. 
 
 \begin{lstlisting}[style=column-code, caption=Printout of Bounds Check Bypass Attack]

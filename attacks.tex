@@ -19,10 +19,10 @@ replicate the attacks since the core is transitioning to a more stable version.
 
 \subsubsection{Handmade clflush}
 
-One feature of normal x86 and ARM processors that is not available in RV64G is the precense of
+One feature of normal x86 and ARM processors that is not available in RV64G is the presence of
 a {\tt clflush}, cache line flush, instruction. This instruction is extremely important for 
 cache side channel attacks since it enables a timing leak depending on if the cache line is
-present in the cache heirarchy or not. Therefore, a workaround was made to implement a 
+present in the cache hierarchy or not. Therefore, a workaround was made to implement a 
 L1 cache flush function. This function takes in an address and size in bytes, and flushes
 all sets starting from that address until the size. This is done by having an extra array, 
 a multiple of the L1 cache size, that is indexed into to evict a particular line. Since we are
@@ -39,7 +39,7 @@ the NLP contains the Return Stack Buffer (RSB) which holds the return pointer fo
 consists of a large predictor such as TAGE or GShare which makes a more accurate prediction based on
 a larger view of the branch history. From the time that we were working on this project, the BOOM 
 processor had multiple issues with the TAGE BP, RSB, and other small BPU bugs. For simplicity and 
-to avoid bugfixing the core instead of working on the attacks, we switched to using a GShare BP
+to avoid bug-fixing the core instead of working on the attacks, we switched to using a GShare BP
 having a global history of 23 bits and history table containing 4096 counters. This was significantly
 less buggy while also providing a simpler approach to training the BPU. Additionally, when trying to
 implement the RSB attack, the RSB was disabled in the code resulting in all ret's to speculate to
@@ -50,7 +50,7 @@ ending up keeping the RSB disabled and instead implemented another attack which 
 
 BOOM's memory system utilizes the RocketChip L1 Data Cache and connects to the rest of the RocketChip
 infrastructure. However, within the RocketChip tile there is no implementation of a L2 cache, instead
-there is a notion of a infinite memory after the L1 cache. This unique memory heirarchy still functions
+there is a notion of a infinite memory after the L1 cache. This unique memory hierarchy still functions
 properly, however when implementing the different attacks, it was noticed that the speculation window
 was not large enough due to memory latencies not being sufficiently large. This is because the
 dependent load causing speculation would resolve quickly, resulting in other speculative loads to not
@@ -113,7 +113,7 @@ checking if the result is under a hand tuned cache threshold. The full code is a
 
 This attack exploits the functionality of the Branch Target Buffer in predicting the outcome
 of jump and link instructions that use the BTB to predict where it will branch. Specifically, 
-the attack works by a malicious entity traning a jump and link instruction to default point to 
+the attack works by a malicious entity training a jump and link instruction to default point to 
 the victim code. Then during the attack run, the jump is supposed to go to a wanted function,
 but instead due to the BTB pointing to the original victim code, it speculatively jumps to the
 victim code and executes it. This particular attack variant also leaks information through the
@@ -148,7 +148,7 @@ int main(void){
     t1 = time()
   }
 }
-\end{lstlisting}\label{code:spectre-v1-pseudo}
+\end{lstlisting}\label{code:spectre-v2-pseudo}
 
 The BOOM implementation of this attack is very similar to the implementation given for
 the bounds check bypass attack listed in \ref{ref:Bounds Check Bypass}. One of the main differences
