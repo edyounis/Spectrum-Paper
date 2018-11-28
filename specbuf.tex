@@ -1,2 +1,28 @@
 \section{SpecBuf}
+The side-channel which forms the basis for multiple Spectre variants is the leakage of information through the data cache during speculative execution.
+To improve performance, modern out-of-order cores will speculatively fetch data into the core on a load miss. 
+However, in the event that the load miss is misspeculated, the refill data is still written into the cache, potentially evicting other resident cache lines.
+By carefully measuring the execution times of repeated loads, attacker code can inspect the state of the cache and infer the destination addresses of misspeculated loads by the victim code.
 
+To address this issue, the tag and data arrays must be considered as part of the ``architectural state'' of the machine, since their contents will affect the ``architectural'' results of timing measurements performed by attacker code.
+Similar to how architectural register state is managed in the execution pipelines of out-of-order machines, a secure core must only allow correctly speculated, committing instructions to modify the cache state.
+A proposed approach to realize this principle is to hold speculated load data in ``L0 Speculation buffers'' that can be flushed when misspeculation is realized.
+This preventing misspeculated loads from affecting the state of the cache, while also allowing correctly speculated loads to broadcast their data into the rest of the machine as soon as possible, to achieve high performance.
+
+\subsection{Miss Status Holding Registers}
+We implement such a speculation buffer as part of the Miss Status Holding Registers (MSHRs) in BOOM's L1 data cache. The MSHRs hold the status of inflight memory requests made by the L1 cache to the L2 memory bus.
+In the original data cache, L2 cache refills would simultaneously write the refill data into the tag and data arrays, and wake up the corresponding MSHRs to return the load data to the core.
+To implement a speculation buffer, we modified cache refills to instead write the refill data into a per-MSHR buffer.
+
+On misspeculation, the misspeculated MSHR entry is flushed along with any load data that has been returned. Only when the MSHR entry is known to be committed does it write the load data into the tag and data arrays. This effectively prevents misspeculated loads from altering the state of the cache.
+
+Since speculating past loads is necessary for performance, we allow bypassing request data out of the speculation buffer, before the data is committed into the tag and data arrays. The consequence of this bypassing is that the service time for a cache miss is unchanged from the original behavior.
+
+Another subtlety of the MSHRs is the per-MSHR replay queues, which hold subsequent requests to the same cache-line. These queues are necessary for handling consecutive load misses to the same cacheline without occupying more valuable MSHR entries. Our speculation buffer will eagerly empty the replay queues until a store miss is seen in the queue. Since stores are always non-speculative, at this point the speculated load data is committed.
+
+\subsection{Point of No Return}
+In the naive implementation of the speculation buffer, entries in the buffer are only deallocated when the instruction is reached by the head of the reorder buffer (ROB). However, this results in heavy MSHR utilization, since there may be many instructions between a waiting load and the commit head waiting to execute and write back. However, we observe that many of those instructions, while still inflight, can be marked as guaranteed to commit.
+
+This leads to the concept of a ``point-of-no-return'' (PnR) head in the ROB, in addition to the commit head. While the commit head tracks the next instruction which will commit the architectural state, the PnR head tracks instructions which are guaranteed to eventually commit, even if they have not written back yet. We observe that loads in the spec-buffer can be committed to the cache as soon as their corresponding instructions pass the PnR head. This reduces pressure on MSHR resources and prevents backpressure on incoming cache requests.
+
+To reduce the performance impacts of our speculation buffer, we implemented a PnR head in the ROB. Two versions were implemented. The first simple-PnR is a less expensive head that will only mark at most one ROB row per cycle as ``guaranteed to commit''. We also implemented a more complex PnR head that can mark multiple rows per cycle.
