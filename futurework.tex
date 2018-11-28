@@ -2,53 +2,58 @@
 
 \subsection{Bounds Check Bypass and Branch Target Injection Improvements}
 
-While the replicated attacks are a PoC of the speculative type of attacks that BOOM
-is susceptible to, future work for this can focus on speeding up the attacks. 
+While the replicated attacks are a PoC of a subset of speculative style attacks that BOOM
+is susceptible to, future work can improve the secret leakage rate of the attacks.
 
-One of the mechanisms to speed up both attacks is the hand made L1 cache flush function
-created. The current implementation uses a large array to index into to evict a particular
-set in the cache. Another approach is to have just the L1 cache size amount of data and use 
-arithmetic to figure out where in this smaller block to access (note: remember that when
-you have an array statically allocated, it doesn't have to start at set 0). Additionally,
-another approach to speeding up the function is to prespecify the addresses that need to be
-accessed to clear the cache and use that to clear the set. 
+One of the mechanisms to speed up both attacks is the improving the hand-made L1 cache line flush function
+used. The current implementation uses a large extra array that is indexed into to evict a particular
+cache set. Another approach, would be to just have this extra array be the size of the L1 cache and use
+arithmetic to figure out which entry to index into to evict the requested cache line. This decreases the
+amount of extra memory needed to run the function while allowing the statically allocated array to reside
+at any memory location. Additionally, another approach to speeding up the function is to know where the
+secret and probed array reside in memory. This allows the function to predetermine which addresses can be 
+accessed to evict any particular line in the cache instead of doing arithmetic to index into the extra array and
+having multiple branches that may misspeculate.
 
-In addition to fixing the access of the array in the cache flush function, another
-improvement can be to tweak the different parameters of the attack. This includes
-both the attack parameters listed in \ref{tab:attack-params} but also the amount of
-hits to the same set in the cache function. Potentially, the amount of rounds on the
-same bytes and training rounds can be reduced to improve the speed of the attack.
+In addition to improving the cache line flush function, another
+improvement can be to tweak the different attack parameters. This includes
+the attack parameters listed in \ref{tab:attack-params}. Potentially, the amount of rounds on the
+same byte and training rounds can be reduced to improve the speed of the attack.
 These can be adjusted in conjunction with the cache flush hits on the same set so even though the 
-random cache replacement policy may not clear all the ways of the set, but the amount of rounds on
-the same byte might remove the false positives.
+random cache replacement policy may not clear all the ways of the set, the amount of rounds on
+the same byte might remove the false hits when the specified line was not evicted.
 
-\subsection{Other Attacks}
+\subsection{Other Attacks and More BOOM Configurations}
 
 In addition to the two attacks that were implemented, BOOM is susceptible to a variety of
-other speculative style attacks. Future work would be to replicate these attacks on BOOM.
-One such example is the RSB attack, our team was originally planning on implementing this
-attack but BOOM did not have a working version with the RSB at the time. Thus, by fixing 
-the RSB, the team could work on implementing this new attack with the code that was initially
-created for this attack. Additionally, the team can train this attack on multiple different
-types of branch predictors. One of the branch predictors that was implemented in BOOM was
-the TAGE BP. 
+other speculative style attacks. One such example is the RSB attack, which our team was 
+originally planning on implementing. However, due to BOOM not have a working configuration
+with the RSB at the time, this attack was not implemented in liew of implementing the Branch Target
+Injection attack. By fixing the RSB, the team could work on implementing this attack with the 
+code that was initially created for it. Another improvement to the project would be to train the
+variety of attacks on different branch predictors. Since BOOM provides a mechanism to add branch 
+predictors and it already has a TAGE predictor, future work can use this functionality to determine
+the speed of the attacks based these new predictors.
 
-\subsection{Better evaluations}
-use hpms
+\subsection{Further Evaluations}
 
-more benchmarks
+Use HPM counters to determine the exact amount of loads that are speculated, delayed, etc. They are
+attached to RTL signals so anything can be measured. They just require a bugfix
 
-better synth - use sram
+More benchmarks including running the full SPEC suite and other memory intensive workloads. [MAYBE
+coremark if it cannot be done]
+
+Get better synthesis data from HAMMER [?]. Instead of using flops use sram to have a minimal 
+physical impact.
 
 \subsection{BOOM Improvements}
 
 Future work for the project also involves bringing BOOM to a more stable version. Throughout
-the project, a multitude of bugs were found both in the front-end (fetch, bpu, etc) and the 
+the project, a multitude of bugs were found both in the front-end (fetch stage, BPU, etc) and the 
 load/store unit that the team had to work around. With these fixed, not only will performance
 of the core improve, but other replication and modifications to the core will be easier since
 the base core will be stable.
 
 multiported cache
 
-specboom improvements - fully associatibe
-
+specboom improvements - fully associative

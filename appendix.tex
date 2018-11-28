@@ -1,13 +1,11 @@
-\appendix
-\section{Bounds Check Bypass BOOM Proof of Concept}
+\section*{Appendix A\\
+          Bounds Check Bypass BOOM Proof of Concept}
 
 In \ref{code:boom-spectre-v1} is the implementation of the Bound Check Bypass attack
-on BOOM. Without speculation, the array2 access in the victimFunc would be only accessed
-during the training round. However, since speculation occurs, the array2 is accessed with
+on BOOM. Without speculation, the {\tt array2} access in the {\tt victimFunc} would be only accessed
+during the training round. However, since speculation occurs, the {\tt array2} is accessed with
 the secret value during the attacker run.
 
 \onecolumn
 \lstinputlisting[style=full-code, caption=BOOM Proof of Concept code of Bounds Check Bypass Attack]{condBranchMispred.c}
 \label{code:boom-spectre-v1}
-
-\section{Other appendix}
