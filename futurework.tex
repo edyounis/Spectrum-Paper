@@ -36,9 +36,10 @@ predictors and it already has a TAGE predictor, future work can use this functio
 the speed of the attacks based these new predictors.
 
 \subsection{Further Evaluations}
-
-Use HPM counters to determine the exact amount of loads that are speculated, delayed, etc. They are
-attached to RTL signals so anything can be measured. They just require a bugfix
+We plan to perform a more through evaluation of the performance and security implications of the
+speculation buffer after more validation on our design is complete. We plan on running the full
+SPEC suite, Coremark, and other memory intensive workloads. We also plan to configure multiple design
+points of the speculation buffer with multiple implementations of the PnR head and refill/replay system.
 
 More benchmarks including running the full SPEC suite and other memory intensive workloads. [MAYBE
 coremark if it cannot be done]
