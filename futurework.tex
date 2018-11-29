@@ -50,11 +50,26 @@ physical impact.
 \subsection{BOOM Improvements}
 
 Future work for the project also involves bringing BOOM to a more stable version. Throughout
-the project, a multitude of bugs were found both in the front-end (fetch stage, BPU, etc) and the 
+the project, a multitude of performance-reducing bugs were found both in the front-end (fetch stage, BPU, etc) and the 
 load/store unit that the team had to work around. With these fixed, not only will performance
 of the core improve, but other replication and modifications to the core will be easier since
-the base core will be stable.
+the base core will be stable and provide more reliable performance metrics.
 
-multiported cache
+\subsubsection{Multiported Cache}
+The non-blocking L1 data cache employed in BOOM was designed with the in-order rocket core in mind; is not ideal for
+a high performance out-of-order core. This is for several reasons.
 
-specboom improvements - fully associative
+Firstly the cache does not have any concept of speculative execution.
+In the baseline version of BOOM, this is bridged with an external ``data cache shim'' stucture. We have further introduced the cache to the
+concept of speculative execution by propagating the necessary signals through the first two stages and into the MSHR file.
+
+Second, the cache contains many structures and provisions which are superfluous in an out-of-order core.
+For instance, the job of the replay queues would be better handled by the core's load/store unit itself.
+
+Finally, the cache is strictly single ported. In order to investigate high performance variants of the BOOM core,
+a multiported data cache will be required.
+
+\subsubsection{Speculation Buffer Improvements}
+Our current speculation buffer implementation has several limitations.
+
+\subsubsection{Multi-level Cache Hierarchy}
