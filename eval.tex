@@ -151,7 +151,7 @@ differences are around the setup of the {\tt fdiv} manipulation
 and the extra arithmetic in the Branch Target Injection attack where you have to calculate
 both the index and the address for accessing the function and passing the input. 
 
-\begin{verbatim}[style=column-code, caption=Printout of Bounds Check Bypass Attack]
+\begin{lstlisting}[style=column-code, caption=Printout of Bounds Check Bypass Attack]
 want(!) =?= 1.(!) 2.(^A)
 want(") =?= 1.(") 2.(^A)
 want(#) =?= 1.(#) 2.( C)
@@ -161,14 +161,14 @@ want(i) =?= 1.(i) 2.(>)
 want(s) =?= 1.(s) 2.(^D)
 want(I) =?= 1.(I) 2.(^D)
 want(s) =?= 1.(s) 2.( ^L)
-want(T) =?= 1.(T) 2.(Ò)
+want(T) =?= 1.(T) 2.( )
 want(h) =?= 1.(h) 2.(^F)
 want(e) =?= 1.(e) 2.()
 want(B) =?= 1.(B) 2.(<9f>)
 want(a) =?= 1.(a) 2.(^B)
 want(b) =?= 1.(b) 2.(^A)
 want(y) =?= 1.(y) 2.()
-want(B) =?= 1.(B) 2.(¡)
+want(B) =?= 1.(B) 2.( )
 want(o) =?= 1.(o) 2.(^H)
 want(o) =?= 1.(o) 2.(4)
 want(m) =?= 1.(m) 2.(k)
@@ -178,6 +178,6 @@ want(T) =?= 1.(T) 2.(^C)
 want(e) =?= 1.(e) 2.(^O)
 want(s) =?= 1.(s) 2.(^D)
 want(t) =?= 1.(t) 2.(^A)
-\end{verbatim}\label{ref:spec-attack-printout}
+\end{lstlisting}\label{code:spec-attack-printout}
 
 \subsection{Spec Buffer}
