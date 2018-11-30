@@ -10,6 +10,11 @@ A proposed approach to realize this principle is to hold speculated load data in
 This preventing misspeculated loads from affecting the state of the cache, while also allowing correctly speculated loads to broadcast their data into the rest of the machine as soon as possible, to achieve high performance.
 
 \subsection{Miss Status Holding Registers}
+\begin{figure}
+  \begin{center}\includegraphics[scale=0.17]{dcache.png}\end{center}
+  \caption{Design of modified L1 data cache}
+\end{figure}
+
 We implement such a speculation buffer as part of the Miss Status Holding Registers (MSHRs) in BOOM's L1 data cache. The MSHRs hold the status of inflight memory requests made by the L1 cache to the L2 memory bus.
 In the original data cache, L2 cache refills would simultaneously write the refill data into the tag and data arrays, and wake up the corresponding MSHRs to return the load data to the core.
 To implement a speculation buffer, we modified cache refills to instead write the refill data into a per-MSHR buffer.
