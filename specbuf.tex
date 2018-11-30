@@ -1,4 +1,5 @@
 \section{Speculation Buffer}
+\label{specbuf}
 The side-channel which forms the basis of multiple Spectre variants is the modification of data cache state during speculative execution.
 To improve performance, modern out-of-order cores will speculatively fetch data into the core on a load miss.
 However, in the event that the load miss is misspeculated, the refill data is still written into the cache, potentially evicting other resident cache lines.
@@ -32,12 +33,13 @@ The initial secure MSHR implementation is not optimal - there are several inflex
 \begin{figure}
   \begin{center}\includegraphics[scale=0.17]{rob_pnr.png}\end{center}
   \caption{Overview of PNR in ROB}
+  \label{PNR}
 \end{figure}
 In the base implementation of the speculation buffer, entries in the buffer are only deallocated when the instruction is reached by the head of the reorder buffer (ROB). However, this can result in heavy MSHR utilization, as many instructions may reside between a waiting load and the commit head. However, we observe that many of those instructions, while still inflight, can be marked as guaranteed to commit.
 
 This informs the concept of a ``point-of-no-return'' (PNR) in the ROB, in addition to the commit head. While the commit head tracks the next instruction which will commit the architectural state, the PNR tracks instructions which are guaranteed to eventually commit, even if they have not yet completed execution. In other words, the PNR points at the oldest instruction which may cause misspeculated execution; an unsafe instruction, such as a branch which has not yet executed. If an instruction is marked as safe, the PNR will pass it whether or not it has completed executing. We observe that refills in the spec-buffer can be committed to the cache as soon as the PNR passes the instruction which triggered them. This reduces pressure on MSHR resources and prevents backpressure on incoming cache requests.
 
-To reduce the performance impacts of our speculation buffer, we implemented a PNR in the ROB. Two versions were implemented. The first simple-PNR is a less expensive pointer that will only mark at most one ROB row per cycle as ``guaranteed to commit''. We also implemented a more complex PNR head that can mark an arbitrary number of rows per cycle, essentially ``jumping over'' groups of safe instructions to the oldest unsafe instruction.
+To reduce the performance impacts of our speculation buffer, we implemented a PNR in the ROB. Two versions were implemented. The first ``simple-PNR'' is will only mark at most one ROB row per cycle as ``guaranteed to commit''. We also implemented a more complex ``fast-PNR'' that can mark an arbitrary number of rows per cycle, essentially ``jumping over'' groups of safe instructions to the oldest unsafe instruction. These are illustrated in figure~\ref{PNR}: the position of the PNR pointer on the subsequent cycle is shown for both the simple and fast versions.
 
 \subsection{Physical Optimization}
 The speculative cacheline buffers are by far the most physically costly additon to our secure boom variant. These buffers do not often need to be accessed simultaneously, and thus can be ``factored out'' of the MSHRs and into a single ported (1RW) or dual ported (1R/1W) SRAM. This would significantly decrease the (already modest) area overhead incurred by these cacheline buffers compared to when they are synthesized out of flip-flops.

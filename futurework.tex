@@ -78,7 +78,7 @@ Finally, the cache is strictly single ported. In order to investigate high perfo
 a multiported data cache will be required.
 
 \subsubsection{Speculation Buffer Improvements}
-Our current speculation buffer implementation has several limitations, mentioned in \ref{Speculation Buffer}.
+Our current speculation buffer implementation has several limitations, mentioned in \ref{specbuf}.
 Among them are the lack of full-associativity, the inability to immediately deallocate killed MSHRs, and MSHR state sequences which are not fully optimized.
 We may be able to implement some of these improvements in our proof-of-concept speculation buffer, but others would be more difficult. To improve further upon
 our proof-of-concept, we may be better served by looking at re-architecting BOOM's data cache with speculative safety in mind. This builds upon our other thoughts
