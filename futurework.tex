@@ -37,11 +37,15 @@ the speed of the attacks based these new predictors.
 
 \subsection{Further Evaluations}
 
-Use HPM counters to determine the exact amount of loads that are speculated, delayed, etc. They are
-attached to RTL signals so anything can be measured. They just require a bugfix
+At the time that evaluations were occuring, BOOMs implementation of high-performance monitoring counters was not working.
+With these counters, additional evaluation could occur with the counters tracking the amount of 
+loads that are speculated, delayed, and more.
 
-More benchmarks including running the full SPEC suite and other memory intensive workloads. [MAYBE
-coremark if it cannot be done]
+Though the Dhrystone benchmark was able to be run, a more comphrehensive benchmark suite would be invaluable to test
+the performance of the SpecBuf. At evaluation, the SpecBuf was unable to boot RISC-V Linux on FireSim and therefore
+we were unable to run the SPEC2017 suite [?]. Additionally, the SpecBuf was unable to run the CoreMark EEMBC benchmark
+suite due to bugs that occured 5M cycles into the suite. Thus, future work would be to fix the bugs preventing these
+benchmarks to run and reevaluate the results of the paper based on this new data.
 
 Get better synthesis data from HAMMER [?]. Instead of using flops use sram to have a minimal 
 physical impact.
@@ -54,6 +58,6 @@ load/store unit that the team had to work around. With these fixed, not only wil
 of the core improve, but other replication and modifications to the core will be easier since
 the base core will be stable.
 
-multiported cache
+Multiported cache
 
-specboom improvements - fully associative
+SpecBoom improvements - fully associative, other?
