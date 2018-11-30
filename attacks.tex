@@ -1,43 +1,45 @@
 \section{Speculative Attack Replication}
 
-To our knowledge, speculative attacks have not been implemented on BOOM yet. Thus,
-one of the focuses of this project was to demonstrate simple proof of concepts for a
+To our knowledge, speculative attacks have not yet been implemented on BOOM. Thus,
+one of the goals of this project was to demonstrate simple proof of concept implementations for a
 subset of speculative style attacks. Originally, the goal was to implement both 
 Spectre-v1, otherwise know as the Bounds Check Bypass attack, and the Return Stack Buffer attack \cite{b3}.
-However, due to the instability of BOOM that was being used, the team instead implemented
-proof of concepts for Bounds Check Bypass attack and Spectre-v2, which is otherwise known as the
-Branch Target Injection attack. The open-source code is available at https://github.com/riscv-boom/boom-attacks.
+However, due to the instability of BOOM's high-performance branch predictors, the team instead implemented
+proof of concepts for Bounds Check Bypass attack and Spectre-v2, otherwise known as the
+Branch Target Injection attack. The source code for these replicated attacks is available at
+https://github.com/riscv-boom/boom-attacks.
 
 \subsection{Implementation Details}
 
 This project utilizes the Berkeley Out-of-Order Machine (BOOM), a synthesizable and 
 parameterizable open source RV64G RISC-V core written in the Chisel hardware construction language \cite{b49}. 
-The microarchitecture is open source, providing the team insight into the front-end and memory system
-used. This insight allowed the team to quickly replicate the attacks and determine the relevant parameters
-for the attacks to be efficient. Despite this efficiency using BOOM and the RISC-V ecosystem, a few issues
-had to be addressed to successfully replicate the attacks.
+The microarchitecture is open source, providing insight into the front-end and memory system
+used. The ability to introspect on the inner mechanics of the core enabled us to quickly replicate 
+the attacks and maximize their performance. We describe some of the issues encountered in this process:
 
 \subsubsection{Flushing a cache line}
 
 % TODO: what is the arm instruction for clflush
 % TODO: put in probability of evicting a relevant line?
 
-One feature of many x86 and ARM ISAs is the availability of a cache manipulation instructions
+One feature of the popular x86 and ARM ISAs is the availability of cache manipulation instructions
 (for example x86 has {\tt clflush} to flush a cache line from every level of the cache hierarchy).
-However, the RV64G ISA that BOOM runs does not have a corresponding {\tt clflush} equivalent.
-This type of instruction is extremely important for the cache side channel attacks that the team is
-replicating since it allows for timing leaks depending on if the cache line is
-present in the cache hierarchy. Therefore, a workaround was made to implement an equivalent
+However, RISC-V does not have a corresponding {\tt clflush} equivalent.
+This type of instruction is extremely important for cache side channel attacks since it allows for
+the attacker to precisely control the contents of the cache.
+Therefore, a workaround was made to implement an equivalent
 L1 cache line flush function. This function takes in an address and size in bytes, and flushes
 all sets starting from that address until the size. This is done by having an extra array which 
 is a multiple of the L1 cache size, that when indexed into, evicts a cache line within the set that the input
-address refers to. While {\tt clflush} is able to selectively remove a cache line from the cache without 
+address refers to.
+
+While {\tt clflush} is able to selectively remove a cache line from the cache without 
 affecting the rest of the cache state, this function created instead is only able to evict the entire set.
 This enforces that the cache line referenced is evicted at the cost of evicting other lines, causing a performance
-decrease. Evicting the entire set is done by accessing the extra array addresses corresponding to the set an 
-{\tt N * L1\_WAY} amount, where {\tt N} is large enough to account for the random cache replacement policy. The larger
-the {\tt N} value, the higher chance that the particular cache line is evicted from the set. For our purposes, this value
-was chosen to be {\tt N = 4} in order to have a high probablility of evicting the referenced cache line.
+decrease. Evicting the entire set is done by accessing the extra array addresses corresponding to the set 
+{\tt N * L1\_WAY} times, where {\tt N} is large enough to account for the random cache replacement policy. The larger
+the {\tt N} value, the higher probability that the particular cache line is evicted from the set. For our purposes, this value
+was chosen to be {\tt N = 4} in order to have a high probability of evicting the referenced cache line.
 
 \subsubsection{BOOM Branch Predictor Unit}
 
@@ -50,9 +52,7 @@ the NLP contains the Return Stack Buffer (RSB) which holds the return pointer fo
 consists of a large predictor such as a TAGE or GShare predictor which makes a more accurate prediction based on
 a larger view of the branch history \cite{b47}. For simplicity, the team decided to use a GShare predictor, since it is 
 easier to train and was fully functioning at the start of the project (the TAGE BP had multiple performance bugs
-associated with it). The GShare predictor used had a global history of 23 bits and history table containing
-4096 counters. Since the global history was longer than the size of the table, the global history was hashed with
-the instruction PC and folded to index into the history table. Additionally, when trying to
+associated with it). The GShare predictor used had a global history of 23 bits and history table containing 4096 counters. Since the global history was longer than the size of the table, the global history was hashed with the instruction PC and folded to index into the history table. Additionally, when trying to
 implement the RSB attack, it was discovered that the RSB was disabled resulting in all {\tt ret} instructions
 to speculate to the next PC instead of the return target PC. Re-enabling the RSB lead to multiple other BPU bugs,
 so the team decided to keep the RSB disabled and instead implement the Branch Target Injection attack which did not
@@ -65,24 +65,21 @@ use the RSB.
 BOOM's memory system utilizes the RocketChip L1 Data Cache and connects to the rest of the RocketChip
 uncore. However, in the configuration of BOOM used, there is a L1 cache and outer memory set to a L2 cache
 latency. This memory hierarchy still functions properly, however it was noticed that the speculation window
-was not large enough due to memory latencies not being sufficiently large. This is because the
-dependent load causing speculation would resolve quickly, resulting in other speculative loads to be reached.
-Thus, a workaround was made to use BOOM's floating point unit to expand the speculation 
-window using {\tt fdiv} instructions. When used on the dependency, this would allow the speculation
-to run for a longer time allowing the speculative loads used for the attack to issue.
+was not large enough due to the memory model mandating that the latency to any memory request would be no greater than latency to L2.
+While a real attack would use L2 or L3 cache misses to expand the speculation window, we instead approximated this with a {\tt fdiv} dependency chain.
 
-\subsection{Bounds Check Bypass Attack}
+\subsection{Bounds Check Bypass Attack} \label{Bounds Check Bypass Attack}
 
-This attack exploits the functionality of conditional branches to leak a secret byte 
-when and attacker resides in the same address space. The attack works by a 
-malicious entity training a conditional branch within victim code to predict the branch
-to be taken in a certain direction, then during the attack round, the malicious entity
+In this attack, the attacker resides in the same address space as the victim and uses
+conditional branches to read victim data. The attacker would first train a conditional branch
+within the victim code to predict the branch to be taken in a certain direction. Then,
+during the attack round, the attacker
 gives a value to the victim that fails the bounds check in the victim but during
 speculation is used to retrieve the secret value. This particular attack variant
 uses a cache side channel attack to leak the information by having a passed in value retrieve
-a secret value which is then used to index "attacker array". After the attack is run, this 
-"attacker array" can be scanned and timed to determine the secret value based on if there
-is a cache hit. The psuedocode for this type of attack in \ref{code:spectre-v1-pseudo}
+a secret value which is then used to index the "attacker array". After the attack is run, this 
+"attacker array" can be scanned and timed to determine the secret value based on the timings
+of cache hits. The psuedocode for this type of attack in \ref{code:spectre-v1-pseudo}
 demonstrates the basic principle of the attack using a C-like syntax.
 
 \begin{lstlisting}[style=column-code, caption=Psuedocode of Bounds Check Bypass Attack]
@@ -112,7 +109,8 @@ int main(void){
     t1 = time()
   }
 }
-\end{lstlisting}\label{code:spectre-v1-pseudo}
+\end{lstlisting}
+\label{code:spectre-v1-pseudo}
 
 % TODO: double check the bpu hashing
 
@@ -120,22 +118,22 @@ The BOOM implementation of this attack echos the Spectre-v1 PoC and the psuedoco
 It consists of three different parts. First, a tally buffer is cleared before reading a secret byte.
 This tally buffer is used to keep track of the amount of hits a secret value gets during the measurement
 phase. Next the array to be probed is evicted from the cache (the "attacker array" mentioned above), and
-the attack trains the BPU to enter the bounds protected area within the victim function. Note that in
+the attacker trains the BPU to enter the bounds protected area within the victim function. Note that in
 this section, there is an extra loop that puts the branch history in a consistent state since the branch
 history is hashed on update. Finally, the attacker code reads out the probing array through using the
 {\tt rdcycle} instruction and checking if the result is under a hand tuned cache threshold. Full code for 
-this attack is visible below at \ref{code:boom-spectre-v1}.
+this attack is at \ref{code:boom-spectre-v1}.
 
 \subsection{Branch Target Injection Attack}
 
 This attack exploits the functionality of the BTB in predicting the outcome
-of {\tt jalr} instructions that use the BTB to predict where it will branch. Specifically, 
-the attack works by a malicious entity training a BTB entry for a {\tt jalr} instruction to point to 
+of {\tt jalr} instructions which use the BTB to predict the destination. In this attack,
+the attacker trains a BTB entry for a {\tt jalr} instruction to point to 
 the victim code. Then during the attack run, when the {\tt jalr} is supposed to go to another function,
 the BTB redirects the PC to the victim code where it speculatively leaks the secret value. Similar to the
 Bounds Check Bypass attack, this attack leaks information through the
-cache side channel mentioned in \ref{ref:Bounds Check Bypass Attack}. The psuedocode in 
-\ref{code:spectre-v2-psuedo} demonstrates the basic principle of the attack using a C-like syntax.
+cache side channel mentioned in \ref{Bounds Check Bypass Attack}. The psuedocode in 
+\ref{code:spectre-v2-pseudo} demonstrates the basic principle of the attack using a C-like syntax.
 
 \begin{lstlisting}[style=column-code, caption=Psuedocode of Bounds Check Bypass Attack]
 char* secret[] = "SECRET_VALUE"
@@ -165,11 +163,12 @@ int main(void){
     t1 = time()
   }
 }
-\end{lstlisting}\label{code:spectre-v2-pseudo}
+\end{lstlisting}
+\label{code:spectre-v2-pseudo}
 
 The BOOM implementation of this attack is very similar to the implementation given for
-the Bounds Check Bypass attack listed in \ref{ref:Bounds Check Bypass Attack}. One of the main differences
+the Bounds Check Bypass attack listed in \ref{Bounds Check Bypass Attack}. One of the main differences
 for this attack is that the attacker has to change both the address of the function being called through
-{\tt jalr} and the pass in value to the victim function throughout the training and the attack run.
+{\tt jalr} and the passed in value to the victim function throughout the training and the attack run.
 Another difference between the two attacks is that the {\tt fdiv} manipulation is instead done on the target address
 in the main function instead of using {\tt fdiv} on the passed in index in the victim code.
