@@ -1,17 +1,16 @@
 \begin{abstract}
-    %TODO: update the scores for Dhrystone
-  %TODO: does the last sentence sound good
+    %TODO: does the last sentence sound good
 
-  The discovery of exploits targeting the effects of speculative execution has
-  forced the computer architecture community to rethink the design space of
-  high-performance and secure microarchitectures. This new category of attacks,
-  broadly categorized as ``Spectre'', has spurred substantial research on how to
-  mitigate vulnerabilities associated with high-performance microarchitectural
-  features. In this paper, we present three results to advance research on
-  secure hardware mitigations for these threats; a taxonomy for speculative style
-  attacks and defenses, replication of speculative attacks on an open-source processor,
-  and a hardware implementation of a speculative buffer cache that mitigates
-  basic speculative cache attacks.
+    The discovery of exploits targeting the effects of speculative execution has
+    forced the computer architecture community to rethink the design space of
+    high-performance and secure microarchitectures. This new category of attacks,
+    broadly categorized as ``Spectre'', has spurred substantial research on how to
+    mitigate vulnerabilities associated with high-performance microarchitectural
+    features. In this paper, we present three results to advance research on
+    secure hardware mitigations for these threats; a taxonomy for speculative style
+    attacks and defenses, replication of speculative attacks on an open-source processor,
+    and a hardware implementation of a speculative buffer cache that mitigates
+    basic speculative cache attacks.
     
     We have categorized the variety of attacks based on if the attacks are 
     architecturally legal and the defenses based on their types. Additionally, 
@@ -22,8 +21,8 @@
     frequency. Additionally, we propose and implement a speculative buffer,
     called SpecBuf, that holds speculative data in the MSHRs until commit where the 
     data will be transfered to the L1. Based on preliminary results, it achieves 
-    a [TODO: DHRYSTONE SCORE] score on the Dhrystone benchmark
-    resulting in a [TODO: PERC DIFFERENCE]\% performance decrease compared to the
+    a 2216 Dhrystones/s score on the Dhrystone benchmark
+    resulting in a +2\% performance decrease compared to the
     baseline. Additionally, synthesizing around a 45nm process shows a 3\% area
     increase and 3\% lower clock impact. To our knowledge, these replications and 
     SpecBuf implementation is the first demonstration of a speculative style attack
