@@ -6,14 +6,16 @@ subset of speculative style attacks. Originally, the goal was to implement both
 Spectre-v1, otherwise know as the Bounds Check Bypass attack, and the Return Stack Buffer attack \cite{b3}.
 However, due to the instability of BOOM's high-performance branch predictors, the team instead implemented
 proof of concepts for Bounds Check Bypass attack and Spectre-v2, otherwise known as the
-Branch Target Injection attack.
+Branch Target Injection attack. The source code for these replicated attacks is available at
+https://github.com/riscv-boom/boom-attacks.
 
 \subsection{Implementation Details}
 
 This project utilizes the Berkeley Out-of-Order Machine (BOOM), a synthesizable and 
 parameterizable open source RV64G RISC-V core written in the Chisel hardware construction language \cite{b49}. 
 The microarchitecture is open source, providing insight into the front-end and memory system
-used. The ability to introspect on the inner mechanics of the core enabled us to quickly replicate the attacks and maximize their performance. We describe some of the issues encountered in this process:
+used. The ability to introspect on the inner mechanics of the core enabled us to quickly replicate 
+the attacks and maximize their performance. We describe some of the issues encountered in this process:
 
 \subsubsection{Flushing a cache line}
 
@@ -30,12 +32,13 @@ L1 cache line flush function. This function takes in an address and size in byte
 all sets starting from that address until the size. This is done by having an extra array which 
 is a multiple of the L1 cache size, that when indexed into, evicts a cache line within the set that the input
 address refers to.
+
 While {\tt clflush} is able to selectively remove a cache line from the cache without 
 affecting the rest of the cache state, this function created instead is only able to evict the entire set.
 This enforces that the cache line referenced is evicted at the cost of evicting other lines, causing a performance
 decrease. Evicting the entire set is done by accessing the extra array addresses corresponding to the set 
 {\tt N * L1\_WAY} times, where {\tt N} is large enough to account for the random cache replacement policy. The larger
-the {\tt N} value, the probability that the particular cache line is evicted from the set. For our purposes, this value
+the {\tt N} value, the higher probability that the particular cache line is evicted from the set. For our purposes, this value
 was chosen to be {\tt N = 4} in order to have a high probablility of evicting the referenced cache line.
 
 \subsubsection{BOOM Branch Predictor Unit}
@@ -64,16 +67,12 @@ use the RSB.
 BOOM's memory system utilizes the RocketChip L1 Data Cache and connects to the rest of the RocketChip
 uncore. However, in the configuration of BOOM used, there is a L1 cache and outer memory set to a L2 cache
 latency. This memory hierarchy still functions properly, however it was noticed that the speculation window
-was not large enough due to the memory model mandating that the latency to any memory request would be no greater than latency to L2. %% to memory latencies not being sufficiently large. This is because the
-%% dependent load causing speculation would resolve quickly, resulting in other speculative loads to be reached.
+was not large enough due to the memory model mandating that the latency to any memory request would be no greater than latency to L2.
 While a real attack would use L2 or L3 cache misses to expand the speculation window, we instead approximated this with a {\tt fdiv} dependency chain.
-%% Thus, a workaround to use BOOM's floating point unit to expand the speculation 
-%% window using {\tt fdiv} instructions was performed. For a real attackWhen used on the dependency, this would allow the speculation
-%% to run for a longer time allowing the speculative loads used for the attack to issue.
 
 \subsection{Bounds Check Bypass Attack}
 
-In this attack, the attacker sits in the same address space as the victim and uses
+In this attack, the attacker resides in the same address space as the victim and uses
 conditional branches to read victim data. The attacker would first train a conditional branch
 within the victim code to predict the branch to be taken in a certain direction. Then,
 during the attack round, the attacker
