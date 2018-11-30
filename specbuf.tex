@@ -1,4 +1,4 @@
-\section{SpecBuf}
+\section{Speculation Buffer}
 The side-channel which forms the basis of multiple Spectre variants is the modification of data cache state during speculative execution.
 To improve performance, modern out-of-order cores will speculatively fetch data into the core on a load miss.
 However, in the event that the load miss is misspeculated, the refill data is still written into the cache, potentially evicting other resident cache lines.
@@ -12,7 +12,7 @@ This prevents misspeculated loads from affecting the state of the cache, while s
 \subsection{Miss Status Holding Registers}
 \begin{figure}
   \begin{center}\includegraphics[scale=0.17]{dcache.png}\end{center}
-  \caption{Design of modified L1 data cache}
+  \caption{Overview of modified L1 data cache}
 \end{figure}
 
 We implement such a speculation buffer as part of the Miss Status Holding Registers (MSHRs) in BOOM's L1 data cache. The MSHRs hold the status of inflight memory requests made by the L1 cache to the L2 memory bus.
@@ -25,12 +25,28 @@ Since speculating past loads is necessary for performance, we allow bypassing re
 
 Another subtlety of the MSHRs is the per-MSHR replay queues, which hold subsequent requests to the same cache-line. These queues are necessary for handling consecutive load misses to the same cacheline without occupying more valuable MSHR entries. Our speculation buffer will eagerly empty the replay queues until a store miss is seen in the queue. Since stores issued to the memory system are always non-speculative, the cacheline can be immediately committed.
 
-\subsection{MSHR Optimization}
-
+\subsubsection{MSHR Logic Optimization}
+The initial secure MSHR implementation is not optimal - there are several inflexibilities which increase the latency of enqueued replays. Additionally, the MSHR file is not fully associative: it is fully associative only with respect to indices. In other words, only a single miss to a particular cache set can be inflight at a time. This may cause a performance penalty when trying to load data at a large stride, repeatedly missing to the same cache sets.
 
 \subsection{Point of No Return}
-In the naive implementation of the speculation buffer, entries in the buffer are only deallocated when the instruction is reached by the head of the reorder buffer (ROB). However, this can result in heavy MSHR utilization, since there may be many instructions between a waiting load and the commit head waiting to execute and write back. However, we observe that many of those instructions, while still inflight, can be marked as guaranteed to commit.
+\begin{figure}
+  \begin{center}\includegraphics[scale=0.17]{rob_pnr.png}\end{center}
+  \caption{Overview of PNR in ROB}
+\end{figure}
+In the base implementation of the speculation buffer, entries in the buffer are only deallocated when the instruction is reached by the head of the reorder buffer (ROB). However, this can result in heavy MSHR utilization, as many instructions may reside between a waiting load and the commit head. However, we observe that many of those instructions, while still inflight, can be marked as guaranteed to commit.
 
-This leads to the concept of a ``point-of-no-return'' (PnR) in the ROB, in addition to the commit head. While the commit head tracks the next instruction which will commit the architectural state, the PnR tracks instructions which are guaranteed to eventually commit, even if they have not yet completed execution. In other words, the PnR points at the oldest instruction which may cause misspeculated execution; an unsafe instruction, such as a branch which has not yet executed. If an instruction is marked as safe, the PnR will pass it whether or not it has completed executing. We observe that refills in the spec-buffer can be committed to the cache as soon as the PnR passes the instruction which triggered them. This reduces pressure on MSHR resources and prevents backpressure on incoming cache requests.
+This informs the concept of a ``point-of-no-return'' (PNR) in the ROB, in addition to the commit head. While the commit head tracks the next instruction which will commit the architectural state, the PNR tracks instructions which are guaranteed to eventually commit, even if they have not yet completed execution. In other words, the PNR points at the oldest instruction which may cause misspeculated execution; an unsafe instruction, such as a branch which has not yet executed. If an instruction is marked as safe, the PNR will pass it whether or not it has completed executing. We observe that refills in the spec-buffer can be committed to the cache as soon as the PNR passes the instruction which triggered them. This reduces pressure on MSHR resources and prevents backpressure on incoming cache requests.
 
-To reduce the performance impacts of our speculation buffer, we implemented a PnR in the ROB. Two versions were implemented. The first simple-PnR is a less expensive pointer that will only mark at most one ROB row per cycle as ``guaranteed to commit''. We also implemented a more complex PnR head that can mark an arbitrary number of rows per cycle, essentially ``jumping over'' groups of safe instructions to the oldest instruction unsafe.
+To reduce the performance impacts of our speculation buffer, we implemented a PNR in the ROB. Two versions were implemented. The first simple-PNR is a less expensive pointer that will only mark at most one ROB row per cycle as ``guaranteed to commit''. We also implemented a more complex PNR head that can mark an arbitrary number of rows per cycle, essentially ``jumping over'' groups of safe instructions to the oldest unsafe instruction.
+
+\subsection{Physical Optimization}
+The speculative cacheline buffers are by far the most physically costly additon to our secure boom variant. These buffers do not often need to be accessed simultaneously, and thus can be ``factored out'' of the MSHRs and into a single ported (1RW) or dual ported (1R/1W) SRAM. This would significantly decrease the (already modest) area overhead incurred by these cacheline buffers compared to when they are synthesized out of flip-flops.
+
+\subsection{MSHRs as a Sidechannel}
+A limitation which affects our current working implementation of the MSHRs is the inability to immediately deallocate them after being marked as killed in all situations. This opens up several potential sidechannels which Spectre style attacks could use to extract information.
+
+\subsubsection{Fully Associative MSHR File}
+Making the MSHR file fully associative would aid in mitigating the first side channel mentioned above. The number of MSHRs allocated could still be potentially used as a side channel, however. The reason we have not made the MSHR file fully associative is the random replacement policy used by the cache, which assumes only a single miss may be inflight per cacheline. We would need to augment this policy with an index associative structure, with as many entries as there are MSHRs. This structure would track which ways of a particular set are scheduled to be replaced by an inflight miss. Note that this would not entirely mitigate the side channel, as now the number of inflight misses to a particular set is now limited by the number of ways, as opposed to being singular. Thus, the attacker would need to simply perform more accesses.
+
+\subsubsection{Immediately Killable MSHRs}
+The root problem which allows the MSHR file to potentially be used as a side channel for Spectre style attacks is that MSHRs are not always immediately deallocated after being killed. This is because the MSHR must acknowledge the L2 data bus when it has returned with the refill data, and forward out speculative loads which will be receieved and killed by the data cache shim.
