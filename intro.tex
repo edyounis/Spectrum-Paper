@@ -2,16 +2,16 @@
 
 Ever since the disclosure of Spectre and Meltdown at the beginning of 2018, there has
 been a large number of attacks targeting speculative microarchitectural state in
-out-of-order processors [?]. Each of these attacks is able to exploit the shared
+out-of-order processors \cite{b1,b2}. Each of these attacks is able to exploit the shared
 state of the processor between a victim process/thread and a malicious process/thread.
 While classifications have been developed for cache-based and for timing-based 
-side-channel attacks [?], a general taxonomy for these attacks has not been adopted.
+side-channel attacks \cite{b5,b6,b7,b9,b10}, a general taxonomy for these attacks has not been adopted.
 A well-devised taxonomy would inform not only the 
 categorization of new attacks but also the development of hardware mitigations for 
 these attacks. A complete categorization system would help hardware researchers 
 identify general mitigations for broad categories of vulnerabilities, instead of 
 targeted fixes for specific attacks. Additionally, the Berkeley Out-of-Order Machine (BOOM) open-source RISC-V
-microarchitecture has not been exposed to these types of attacks yet [?]. BOOM
+microarchitecture has not been exposed to these types of attacks yet \cite{b11}. BOOM
 is a generic implementation of a speculative 
 out-of-order microarchitecture that employs many of the same features as the 
 proprietary systems targeted by published attacks. Generic, open-source 

@@ -3,15 +3,15 @@
 To our knowledge, speculative attacks have not been implemented on BOOM yet. Thus,
 one of the focuses of this project was to demonstrate simple proof of concepts for a
 subset of speculative style attacks. Originally, the goal was to implement both 
-Spectre-v1, otherwise know as the Bounds Check Bypass attack, and the Return Stack Buffer attack [?,?].
+Spectre-v1, otherwise know as the Bounds Check Bypass attack, and the Return Stack Buffer attack \cite{b3}.
 However, due to the instability of BOOM that was being used, the team instead implemented
 proof of concepts for Bounds Check Bypass attack and Spectre-v2, which is otherwise known as the
-Branch Target Injection attack.
+Branch Target Injection attack. The open-source code is available at https://github.com/riscv-boom/boom-attacks.
 
 \subsection{Implementation Details}
 
 This project utilizes the Berkeley Out-of-Order Machine (BOOM), a synthesizable and 
-parameterizable open source RV64G RISC-V core written in the Chisel hardware construction language [?]. 
+parameterizable open source RV64G RISC-V core written in the Chisel hardware construction language \cite{b49}. 
 The microarchitecture is open source, providing the team insight into the front-end and memory system
 used. This insight allowed the team to quickly replicate the attacks and determine the relevant parameters
 for the attacks to be efficient. Despite this efficiency using BOOM and the RISC-V ecosystem, a few issues
@@ -48,7 +48,7 @@ slower but more complicated "backing predictor" (BP). The NLP contains the Branc
 where more recent branches are cached alongside their target, a tag of the PC, and more metadata. Additionally,
 the NLP contains the Return Stack Buffer (RSB) which holds the return pointer for a {\tt ret} instruction. The BP
 consists of a large predictor such as a TAGE or GShare predictor which makes a more accurate prediction based on
-a larger view of the branch history. For simplicity, the team decided to use a GShare predictor, since it is 
+a larger view of the branch history \cite{b47}. For simplicity, the team decided to use a GShare predictor, since it is 
 easier to train and was fully functioning at the start of the project (the TAGE BP had multiple performance bugs
 associated with it). The GShare predictor used had a global history of 23 bits and history table containing
 4096 counters. Since the global history was longer than the size of the table, the global history was hashed with
@@ -116,7 +116,7 @@ int main(void){
 
 % TODO: double check the bpu hashing
 
-The BOOM implementation of this attack echos the Spectre-v1 PoC and the psuedocode closely [?].
+The BOOM implementation of this attack echos the Spectre-v1 PoC and the psuedocode closely.
 It consists of three different parts. First, a tally buffer is cleared before reading a secret byte.
 This tally buffer is used to keep track of the amount of hits a secret value gets during the measurement
 phase. Next the array to be probed is evicted from the cache (the "attacker array" mentioned above), and
