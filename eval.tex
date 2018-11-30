@@ -154,7 +154,7 @@ cycle-accurate, FPGA-accelerated scale-out computer system simulation platform \
 
 Overall, the attacks chosen were replicated successfully on the BOOM microarchitecture. A printout
 demonstrating leakage of secret information with the Bounds Check Bypass attack
-is shown in \ref{ref:spec-attack-printout}. Initial results of the replications
+is shown in \ref{code:spec-attack-printout}. Initial results of the replications
 are promising with around 3.6KB/s for both attacks. \ref{tab:spec-attack-results}
 shows the results of the two attacks. These measurements take into account the clearing
 of the tally array before each run, the multiple rounds of training for the BPU,
@@ -191,7 +191,8 @@ want(T) =?= 1.(T) 2.(^C)
 want(e) =?= 1.(e) 2.(^O)
 want(s) =?= 1.(s) 2.(^D)
 want(t) =?= 1.(t) 2.(^A)
-\end{lstlisting}\label{code:spec-attack-printout}
+\end{lstlisting}
+\label{code:spec-attack-printout}
 
 \subsection{SpecBuf Results}
 

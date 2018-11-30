@@ -52,9 +52,7 @@ the NLP contains the Return Stack Buffer (RSB) which holds the return pointer fo
 consists of a large predictor such as a TAGE or GShare predictor which makes a more accurate prediction based on
 a larger view of the branch history \cite{b47}. For simplicity, the team decided to use a GShare predictor, since it is 
 easier to train and was fully functioning at the start of the project (the TAGE BP had multiple performance bugs
-associated with it). The GShare predictor used had a global history of 23 bits and history table containing
-4096 counters. Since the global history was longer than the size of the table, the global history was hashed with
-the instruction PC and folded to index into the history table. Additionally, when trying to
+associated with it). The GShare predictor used had a global history of 23 bits and history table containing 4096 counters. Since the global history was longer than the size of the table, the global history was hashed with the instruction PC and folded to index into the history table. Additionally, when trying to
 implement the RSB attack, it was discovered that the RSB was disabled resulting in all {\tt ret} instructions
 to speculate to the next PC instead of the return target PC. Re-enabling the RSB lead to multiple other BPU bugs,
 so the team decided to keep the RSB disabled and instead implement the Branch Target Injection attack which did not
@@ -70,7 +68,7 @@ latency. This memory hierarchy still functions properly, however it was noticed 
 was not large enough due to the memory model mandating that the latency to any memory request would be no greater than latency to L2.
 While a real attack would use L2 or L3 cache misses to expand the speculation window, we instead approximated this with a {\tt fdiv} dependency chain.
 
-\subsection{Bounds Check Bypass Attack}
+\subsection{Bounds Check Bypass Attack} \label{Bounds Check Bypass Attack}
 
 In this attack, the attacker resides in the same address space as the victim and uses
 conditional branches to read victim data. The attacker would first train a conditional branch
@@ -111,7 +109,8 @@ int main(void){
     t1 = time()
   }
 }
-\end{lstlisting}\label{code:spectre-v1-pseudo}
+\end{lstlisting}
+\label{code:spectre-v1-pseudo}
 
 % TODO: double check the bpu hashing
 
@@ -133,8 +132,8 @@ the attacker trains a BTB entry for a {\tt jalr} instruction to point to
 the victim code. Then during the attack run, when the {\tt jalr} is supposed to go to another function,
 the BTB redirects the PC to the victim code where it speculatively leaks the secret value. Similar to the
 Bounds Check Bypass attack, this attack leaks information through the
-cache side channel mentioned in \ref{ref:Bounds Check Bypass Attack}. The psuedocode in 
-\ref{code:spectre-v2-psuedo} demonstrates the basic principle of the attack using a C-like syntax.
+cache side channel mentioned in \ref{Bounds Check Bypass Attack}. The psuedocode in 
+\ref{code:spectre-v2-pseudo} demonstrates the basic principle of the attack using a C-like syntax.
 
 \begin{lstlisting}[style=column-code, caption=Psuedocode of Bounds Check Bypass Attack]
 char* secret[] = "SECRET_VALUE"
@@ -164,10 +163,11 @@ int main(void){
     t1 = time()
   }
 }
-\end{lstlisting}\label{code:spectre-v2-pseudo}
+\end{lstlisting}
+\label{code:spectre-v2-pseudo}
 
 The BOOM implementation of this attack is very similar to the implementation given for
-the Bounds Check Bypass attack listed in \ref{ref:Bounds Check Bypass Attack}. One of the main differences
+the Bounds Check Bypass attack listed in \ref{Bounds Check Bypass Attack}. One of the main differences
 for this attack is that the attacker has to change both the address of the function being called through
 {\tt jalr} and the passed in value to the victim function throughout the training and the attack run.
 Another difference between the two attacks is that the {\tt fdiv} manipulation is instead done on the target address
