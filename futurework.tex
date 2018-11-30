@@ -39,10 +39,10 @@ the speed of the attacks based these new predictors.
 
 We plan to perform a more through evaluation of the performance and security implications of the
 speculation buffer after more validation on our design is complete. 
-Though the Dhrystone benchmark was able to be run, a more comphrehensive benchmark suite would be invaluable to test
+Though the Dhrystone benchmark was able to be run, a more comprehensive benchmark suite would be invaluable to test
 the performance of the SpecBuf. At evaluation, the SpecBuf was unable to boot RISC-V Linux on FireSim and therefore
 we were unable to run the SPEC2017 suite \cite{b50}. Additionally, the SpecBuf was unable to run the CoreMark EEMBC benchmark
-suite due to bugs that occured 5M cycles into the suite \cite{b51}. Thus, future work would be to fix the bugs preventing these
+suite due to bugs that occurred 5M cycles into the suite \cite{b51}. Thus, future work would be to fix the bugs preventing these
 benchmarks to run and reevaluate the results of the paper based on this new data. We also plan to configure multiple design
 points of the speculation buffer with multiple implementations of the PnR head and refill/replay system.
 
@@ -57,19 +57,19 @@ load/store unit that the team had to work around. With these fixed, not only wil
 of the core improve, but other replication and modifications to the core will be easier since
 the base core will be stable and provide more reliable performance metrics.
 
-\subsubsection{Multiported Cache}
+\subsubsection{Multi-ported Cache}
 The non-blocking L1 data cache employed in BOOM was designed with the in-order Rocket core in mind; is not ideal for
 a high performance out-of-order core. This is for several reasons.
 
 Firstly the cache does not have any concept of speculative execution.
-In the baseline version of BOOM, this is bridged with an external ``data cache shim'' stucture. We have further introduced the cache to the
+In the baseline version of BOOM, this is bridged with an external ``data cache shim'' structure. We have further introduced the cache to the
 concept of speculative execution by propagating the necessary signals through the first two stages and into the MSHR file.
 
 Second, the cache contains many structures and provisions which are superfluous in an out-of-order core.
 For instance, the job of the replay queues would be better handled by the core's load/store unit itself.
 
 Finally, the cache is strictly single ported. In order to investigate high performance variants of the BOOM core,
-a multiported data cache will be required.
+a multi-ported data cache will be required.
 
 \subsubsection{Speculation Buffer Improvements}
 Our current speculation buffer implementation has several limitations, mentioned in \ref{specbuf}.

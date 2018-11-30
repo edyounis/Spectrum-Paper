@@ -195,19 +195,19 @@ want(t) =?= 1.(t) 2.(^A)
 
 \subsection{SpecBuf Results}
 
-We evaluated our SpecBuff implementation using three small microbenchmarks, Dhrystone and the 
+We evaluated our SpecBuf implementation using three small microbenchmarks, Dhrystone and the 
 replicated attacks. The SpecBuf shows a small increase in performance in initial tests while providing
 a defense against the replicated attacks demonstrated.
 
-\subsubsection{Microbenchmark Explainations and Results}
+\subsubsection{Microbenchmark Explanations and Results}
 
 The first microbenchmark named "Non-speculative load misses to same sets" was used to test how efficient non-speculative loads
 were when the MSHR was unable to allocated entries for each new load. This microbenchmark is a series of loads that had different
 tags but the same index, thus in BOOM's MSHR, only one entry would be able to be allocated at a time. When using the SpecBuf ...
 
 The second microbenchmark named "Non-speculative load misses to different sets" is similar to the first except that each subsequent
-load is accessing a different set in the cache. In the normal version of BOOM, the MSHR's would fill up competely but then stall 
-when full since the MSHR would be unable to allocate extra entries until a previous load is completed. When using the SpecBuff ...
+load is accessing a different set in the cache. In the normal version of BOOM, the MSHR's would fill up completely but then stall 
+when full since the MSHR would be unable to allocate extra entries until a previous load is completed. When using the SpecBuf ...
 
 The final microbenchmark named "MSHR evicted speculative load miss" is used to test the impact when a load has to be evicted from the 
 MSHR due to a potential deadlock condition [described in \ref{}]. In the normal version of BOOM, the speculative load will complete and

@@ -39,7 +39,7 @@ This enforces that the cache line referenced is evicted at the cost of evicting 
 decrease. Evicting the entire set is done by accessing the extra array addresses corresponding to the set 
 {\tt N * L1\_WAY} times, where {\tt N} is large enough to account for the random cache replacement policy. The larger
 the {\tt N} value, the higher probability that the particular cache line is evicted from the set. For our purposes, this value
-was chosen to be {\tt N = 4} in order to have a high probablility of evicting the referenced cache line.
+was chosen to be {\tt N = 4} in order to have a high probability of evicting the referenced cache line.
 
 \subsubsection{BOOM Branch Predictor Unit}
 
@@ -129,7 +129,7 @@ this attack is at \ref{code:boom-spectre-v1}.
 
 This attack exploits the functionality of the BTB in predicting the outcome
 of {\tt jalr} instructions which use the BTB to predict the destination. In this attack,
-the attcker trains a BTB entry for a {\tt jalr} instruction to point to 
+the attacker trains a BTB entry for a {\tt jalr} instruction to point to 
 the victim code. Then during the attack run, when the {\tt jalr} is supposed to go to another function,
 the BTB redirects the PC to the victim code where it speculatively leaks the secret value. Similar to the
 Bounds Check Bypass attack, this attack leaks information through the
