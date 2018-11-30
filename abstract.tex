@@ -1,22 +1,28 @@
 \begin{abstract}
-    With the discovery of speculative execution exploitative attacks the computer
-    architecture community is rethinking the architecture boundary and how the
-    attacks can be mitigated. This project aims to tackle this new set of problems
-    by providing three different outcomes; a comprehensive taxonomy for attacks
-    and defenses, replication of speculative attacks on an open-source processor,
-    and a mitigation developed for some of these attacks on an open-source
-    processor.
+    %TODO: update the scores for Dhrystone
+    %TODO: does the last sentence sound good
+
+    With the discovery of speculative execution exploitative attacks, the computer
+    architecture community is rethinking the architecture boundary and how to 
+    mitigate attacks while keeping performance at an acceptable level.
+    In this paper, we present three different results;
+    a taxonomy for speculative style attacks and defenses, replication of 
+    speculative attacks on an open-source processor, and a simple speculative 
+    buffer cache that mitigates the basic speculative cache attacks.
     
     We have categorized the variety of attacks based on if the attacks are 
     architecturally legal and the defenses based on their types. Additionally, 
-    for the taxonomy we have mapped mitigations to the proper attacks that they 
-    potentially cover. Using the Berkeley Out-Of-Order Machine, we have 
+    we have mapped mitigations to the attacks that they potentially cover.
+    Using the Berkeley Out-Of-Order Machine (BOOM), we have 
     re-implemented Spectre Variants 1 and 2 that target the L1 Data Cache. We 
     achieve a leakage rate of around 114 bytes per sec with a 100MHz processor 
-    frequency. For mitigating these speculative load type of attacks, we 
-    implemented a speculative buffer that resides within the MSHRs. Based on
-    preliminary results, it achieves a 2151 score on the Dhrystone benchmark
-    resulting in a 1\% performance decrease compared to the baseline. Additionally,
-    synthesizing around a 45nm process shows a 3\% area increase and 3\% lower clock
-    impact.
+    frequency. Additionally, we propose and implement a speculative buffer,
+    called SpecBuf, that holds speculative data in the MSHRs until commit where the 
+    data will be transfered to the L1. Based on preliminary results, it achieves 
+    a [TODO: DHRYSTONE SCORE] score on the Dhrystone benchmark
+    resulting in a [TODO: PERC DIFFERENCE]\% performance decrease compared to the
+    baseline. Additionally, synthesizing around a 45nm process shows a 3\% area
+    increase and 3\% lower clock impact. To our knowledge, these replications and 
+    SpecBuf implementation is the first demonstration of a speculative style attack
+    on BOOM and the first synthesizable RTL implementation of a speculative buffer.
 \end{abstract}

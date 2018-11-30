@@ -1,6 +1,5 @@
 \section{Evaluations}
 
-% TODO: update this data
 \begin{table}
 \centering
 \caption{Speculative Attack Results}
@@ -8,15 +7,13 @@
 \begin{tabular}{@{} *4l @{}} \toprule
     &                        & \multicolumn{2}{l}{Bytes per Second} \\
     Attack                  & Cycles for Secret Byte &           100MHz &   3.2GHz \\ \midrule
-    Bounds Check Bypass     &                ~884485 &          113 bps & 3618 bps \\
-    Branch Target Injection &                ~876602 &          114 bps & 3650 bps \\ \bottomrule
+    Bounds Check Bypass     &                ~884485 &          ~113 B/s & ~3618 B/s \\
+    Branch Target Injection &                ~876602 &          ~114 B/s & ~3650 B/s \\ \bottomrule
 \end{tabular}
 \end{table}
 
 \begin{table}
-\centering
-\caption{BOOM Core Parameters}
-\label{tab:boom-core-params}
+\centering \caption{BOOM Core Parameters} \label{tab:boom-core-params}
 \begin{tabular}{@{} *2l @{}} \toprule
     Parameter                    & Value \\ \midrule
     Fetch Width                  & 2 \\
@@ -48,7 +45,20 @@
 \end{tabular}
 \end{table} 
 
-% TODO: updated behavior
+\begin{table}
+\centering
+\caption{SpecBuf Results}
+\label{tab:spec-buf-results}
+\begin{tabular}{@{} *3l @{}} \toprule
+                                              & \multicolumn{2}{l}{Version of BOOM} \\
+    Benchmark                                 & Normal (non-SpecBuf) & SpecBuf \\ \midrule
+    Non-speculative load misses to same sets  & ??                   & ??      \\
+    Non-speculative load misses to diff. sets & ??                   & ??      \\ 
+    MSHR evicted speculative load miss        & ??                   & ??      \\
+    Dhrystone                                 & 2176 Dhrystones/s    & 2216 Dhrystones/s \\ \bottomrule
+\end{tabular}
+\end{table}
+
 \begin{tikzpicture}
 \begin{axis}[
     title={Speed of Replicated Attacks},
@@ -137,12 +147,12 @@ The two different attacks were replicated on the BOOM core with the parameters g
 in \ref{tab:boom-core-params}. All attacks were measured using FireSim, an open-source
 cycle-accurate, FPGA-accelerated scale-out computer system simulation platform [?].
 
-\subsection{Replicating Speculative Attacks}
+\subsection{Replicating Speculative Attacks Results}
 
 Overall, the attacks chosen were replicated successfully on the BOOM microarchitecture. A printout
 demonstrating leakage of secret information with the Bounds Check Bypass attack
 is shown in \ref{ref:spec-attack-printout}. Initial results of the replications
-are promising with [FILL IN DATA SENTENCE]. \ref{tab:spec-attack-results}
+are promising with around 3.6KB/s for both attacks. \ref{tab:spec-attack-results}
 shows the results of the two attacks. These measurements take into account the clearing
 of the tally array before each run, the multiple rounds of training for the BPU,
 the single attack run on the victim, and the time to measure out the secret from the attacker array.
@@ -180,4 +190,27 @@ want(s) =?= 1.(s) 2.(^D)
 want(t) =?= 1.(t) 2.(^A)
 \end{lstlisting}\label{code:spec-attack-printout}
 
-\subsection{Spec Buffer}
+\subsection{SpecBuff Results}
+
+We evaluated our SpecBuff implementation using three small microbenchmarks, Dhrystone and the 
+replicated attacks. The SpecBuf shows a small increase in performance in initial tests while providing
+a defense against the replicated attacks demonstrated.
+
+\subsubsection{Microbenchmark Explainations and Results}
+
+The first microbenchmark named "Non-speculative load misses to same sets" was used to test how efficient non-speculative loads
+were when the MSHR was unable to allocated entries for each new load. This microbenchmark is a series of loads that had different
+tags but the same index, thus in BOOM's MSHR, only one entry would be able to be allocated at a time. When using the SpecBuf ...
+
+The second microbenchmark named "Non-speculative load misses to different sets" is similar to the first except that each subsequent
+load is accessing a different set in the cache. In the normal version of BOOM, the MSHR's would fill up competely but then stall 
+when full since the MSHR would be unable to allocate extra entries until a previous load is completed. When using the SpecBuff ...
+
+The final microbenchmark named "MSHR evicted speculative load miss" is used to test the impact when a load has to be evicted from the 
+MSHR due to a potential deadlock condition [described in \ref{}]. In the normal version of BOOM, the speculative load will complete and
+write it's data to the cache thus the entry will evict and the critical load that blocks a control flow speculation instruction will be
+allowed to take that entry. In the SpecBuf case, the speculative load will be evicted after writing its data to the microarchitectural 
+register. However, the data from this speculative load will not be put in the cache. Thus, the microbenchmark shows that any following
+loads depending on this evicted load will first miss.
+
+\subsubsection{Dhrystone Results}
