@@ -1,14 +1,17 @@
 \begin{abstract}
     %TODO: update the scores for Dhrystone
-    %TODO: does the last sentence sound good
+  %TODO: does the last sentence sound good
 
-    With the discovery of speculative execution exploitative attacks, the computer
-    architecture community is rethinking the architecture boundary and how to 
-    mitigate attacks while keeping performance at an acceptable level.
-    In this paper, we present three different results;
-    a taxonomy for speculative style attacks and defenses, replication of 
-    speculative attacks on an open-source processor, and a simple speculative 
-    buffer cache that mitigates the basic speculative cache attacks.
+  The discovery of exploits targeting the effects of speculative execution has
+  forced the computer architecture community to rethink the design space of
+  high-performance and secure microarchitectures. This new category of attacks,
+  broadly categorized as ``Spectre'', has spurred substantial research on how to
+  mitigate vulnerabilities associated with high-performance microarchitectural
+  features. In this paper, we present three results to advance research on
+  secure hardware mitigations for these threats; a taxonomy for speculative style
+  attacks and defenses, replication of speculative attacks on an open-source processor,
+  and a hardware implementation of a speculative buffer cache that mitigates
+  basic speculative cache attacks.
     
     We have categorized the variety of attacks based on if the attacks are 
     architecturally legal and the defenses based on their types. Additionally, 

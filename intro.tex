@@ -1,6 +1,6 @@
 \section{Introduction}
 
-Ever since the disclosure of Spectre and Meltdown at the beginning of 2018, there has
+Ever since the disclosure of Spectre and Meltdown at the start of 2018, there has
 been a large number of attacks targeting speculative microarchitectural state in
 out-of-order processors [?]. Each of these attacks is able to exploit the shared
 state of the processor between a victim process/thread and a malicious process/thread.
@@ -10,24 +10,25 @@ A well-devised taxonomy would inform not only the
 categorization of new attacks but also the development of hardware mitigations for 
 these attacks. A complete categorization system would help hardware researchers 
 identify general mitigations for broad categories of vulnerabilities, instead of 
-targeted fixes for specific attacks. Additionally, the Berkeley Out-of-Order Machine (BOOM) open-source RISC-V
-microarchitecture has not been exposed to these types of attacks yet [?]. BOOM
+targeted fixes for specific attacks.
+
+Additionally, the Berkeley Out-of-Order Machine (BOOM) open-source RISC-V
+microarchitecture has yet not been exposed to these types of attacks [?]. BOOM
 is a generic implementation of a speculative 
 out-of-order microarchitecture that employs many of the same features as the 
-proprietary systems targeted by published attacks. Generic, open-source 
+out-of-order systems targeted by published attacks. Generic, open-source 
 implementations of attacks and their mitigation strategies would provide a common 
 foundation for the development of defenses for speculative execution attacks.
 By attacking an open-source machine with Spectre, researchers can not only gain more 
 insight into the malicious attack but also attempt to mitigate the attack on a shared,
-open platform. Moreover, this project is hoped to unify and guide the attack 
+open platform. Moreover, this project hopes to unify and guide the attack 
 mitigation process. With an attack taxonomy and an open-source microarchitecture, a 
 newly proposed mitigation technique can easily target a class of attacks as informed 
 by the taxonomy.
 
 The remainder of this paper is structured as follows: In Section 2, we discuss
 related works that indicate relevant work that introduces attacks, defenses, and classifications.
-In Section 3 we discuss our taxonomy and how we think about the attacks and defenses. In
+In Section 3 we discuss our taxonomy and it's categorization of the attacks and defenses. In
 Section 4 we present the subset of attacks that were replicated for this paper. In Section 5
 we discuss the implementation of the SpecBuf. In Section 6 we discuss the evaluation of the
-replications and the SpecBuf. In Section 7 we discuss future work that can be done with each
-component and conclude in Section 8.
+replications and the SpecBuf. In Section 7 we discuss future work.
