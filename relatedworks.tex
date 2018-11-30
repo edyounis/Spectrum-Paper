@@ -1,20 +1,44 @@
 \section{Related Works}
-\begin{itemize}
-	\item Spectre Variants
-		\begin{itemize}
-			\item Spectre v1 v2
-			\item Meltdown
-		\end{itemize}
 
-	\item Spectre Defenses
-		\begin{itemize}
-			\item InvisiSpec
-			\item SafeSpec
-		\end{itemize}
+\subsection{Speculative Style Attacks}
 
-	\item Spectre Classifications
-		\begin{itemize}
-			\item A systematic Evaluation of Transient Execution Attacks and Defenses
-		\end{itemize}
+\subsubsection{Spectre}
 
-\end{itemize}
+This work first described a speculative style attack on out-of-order cores that 
+allows a malicious user to read secret data from a victim. When an out-of-order 
+processor reaches a control flow instruction, it uses the Branch Target Buffer in 
+conjunction with the Branch Predictor to make an educated guess on the direction
+of program flow. If the control flow is mispredicted then the code that was
+executed will not be committed into the architectural state. However, the
+speculated instruction can changed the microarchitectural state causing data
+leakages. This work introduced two main variants that leak secret data through
+a cache side channel attack. The first variant named the Bounds Check Bypass
+trains the Branch Predictor to ignore a bounds check and retrieve secret data. The
+second variant uses the Branch Target Buffer to determine which target to execute
+called a gadget. Although both attacks are simple exploits of speculative execution,
+this attack affects all types of out-of-order speculative microarchitectures 
+and requires significant changes to the microarchitecture and software stack to solve.
+Our work serves as an extension of this work by categorizing, replicating, and mitigating
+speculative cache side channel attacks on an open source out-of-order microarchitecture.
+
+\subsubsection{Meltdown}
+
+This work describes another form of speculative attack attack where an attacker 
+can bypass privilege levels and read all the data from kernel memory. Exploiting a 
+similar mechanism to Spectre, this attack uses speculated code run after memory access
+protection exception to leak kernel memory to the attacker. When the memory access
+is run, then the privilege check occurs in parallel with retrieving the data. Thus,
+for this attack to work, the data is retrieved and is used to modify the 
+microarchitectural state before instruction causes an exception. This type of attack
+is more dangerous than Spectre in that it leaks kernel memory (and physical memory if
+it is mapped in the kernel), however, it is easier to mitigate through mechanisms such
+as KAISER [?] which unmaps the physical memory from the kernel preventing the attack.
+Our work for this paper, addresses the leakage mechanism of this particular attack but 
+does not solve the source of the attack since it is specific to x86 architectures.
+
+\subsection{Speculation Defenses}
+\subsubsection{InvisiSpec}
+\subsubsection{SafeSpec}
+
+\subsection{Other Classifications}
+\subsubsection{A systematic Evaluation of Transient Execution Attacks and Defenses}
