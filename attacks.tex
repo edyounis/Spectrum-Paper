@@ -77,26 +77,22 @@ uses a cache side channel attack to leak the information by having a passed in v
 a secret value which is then used to index the "attacker array". After the attack is run, this 
 "attacker array" can be scanned and timed to determine the secret value based on the timings
 of cache hits. The psuedocode for this type of attack in \ref{code:spectre-v1-pseudo}
-demonstrates the basic principle of the attack using a C-like syntax.
+demonstrates the concept of the attack using a C-like syntax.
 
 \begin{lstlisting}[style=column-code, caption=Psuedocode of Bounds Check Bypass Attack]
 char* secret[] = "SECRET_VALUE"
 char  attackArray[256 * CACHE_BLOCK_SZ]
 
 void victim(idx){
-  if (idx < secret.size()){
+  if (idx < secret.size())
     attackArray[secret[idx] * CACHE_BLOCK_SZ]
-  }
 }
 
 int main(void){
-  
-  // Training
-  while (TRAINING_ROUNDS){
+  // Train BPU and Attack secret value
+  while (TRAINING_ROUNDS)
     victim(idx)
-  }
 
-  // Attack. Read secret value
   victim(outOfBoundsIdx)
 
   // Probe array to check for hit
