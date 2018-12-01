@@ -3,7 +3,7 @@
 The side-channel which forms the basis of multiple Spectre variants is the modification of data cache state during speculative execution.
 To improve performance, modern out-of-order cores will speculatively fetch data into the core on a load miss.
 However, in the event that the load miss is misspeculated, the refill data is still written into the cache, potentially evicting other resident cache lines.
-As seen in the attack variants described earlier, by carefully measuring the execution times of repeated loads, attacker code can inspect the state of the cache and infer the destination addresses of misspeculated loads by the victim code.
+As seen in the attack variants described in Section \ref{Speculative Attack Replication}, by carefully measuring the execution times of repeated loads, attacker code can inspect the state of the cache and infer the destination addresses of misspeculated loads by the victim code.
 
 To address this issue, the tag and data arrays must be considered as part of the ``architectural state'' of the machine, since their contents will affect the ``architectural'' results of timing measurements performed by attacker code.
 Similar to how architectural register state is managed in the execution pipelines of out-of-order machines, a secure core must only allow correctly speculated, committing instructions to modify the cache state.

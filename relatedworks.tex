@@ -34,7 +34,7 @@ instructions can be speculatively executed, leaking the information through a si
 channel. This type of attack
 is more dangerous than Spectre in that it leaks kernel memory (and physical memory if
 it is mapped in the kernel), however, it is easier to mitigate through mechanisms such
-as KAISER \cite{b53} which unmaps the physical memory from the kernel preventing the attack.
+as KAISER \cite{b21} which unmaps the physical memory from the kernel preventing the attack.
 Our work for this paper addresses the leakage mechanism of this particular attack but 
 does not solve the source of the attack since it is specific to x86 architectures.
 
@@ -65,11 +65,9 @@ We differ from this work by creating a working implementation of a speculative b
 
 \subsection{Other Classifications}
 
-\subsubsection{A systematic Evaluation of Transient Execution Attacks and Defenses}
+\subsubsection{A Systematic Evaluation of Transient Execution Attacks and Defenses}
 
-This work proposes a systematic classification for speculative attacks \cite{b48}. While categorizing
-the attacks, the authors also discovered other speculative attack variants.
-Additionally, this paper does a in-depth analysis of Spectre-type
-mitigations, but has a very short evaluation of Meltdown defenses.
-Our taxonomy differs from this work by mainly focusing on a vendor agnostic solution to speculative side channel
-attacks.
+This work proposes a systematic classification for speculative attacks \cite{b48}. 
+In addition to categorizing the attacks, the authors also described other undiscovered speculative attack variants.
+Additionally, this paper does a in-depth analysis of Spectre-type mitigations, but has a very short evaluation of Meltdown defenses.
+Our taxonomy differs from this work by mainly focusing on a vendor agnostic solutions to speculative side channel attacks.

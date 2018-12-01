@@ -7,7 +7,7 @@ Spectre-v1, otherwise know as the Bounds Check Bypass attack, and the Return Sta
 However, due to the instability of BOOM's high-performance branch predictors, the team instead implemented
 proof of concepts for Bounds Check Bypass attack and Spectre-v2, otherwise known as the
 Branch Target Injection attack. The source code for these replicated attacks is available at
-https://github.com/riscv-boom/boom-attacks.
+\url{https://github.com/riscv-boom/boom-attacks}.
 
 \subsection{Implementation Details}
 
@@ -31,7 +31,7 @@ is a multiple of the L1 cache size, that when indexed into, evicts a cache line 
 address refers to.
 
 While {\tt clflush} is able to selectively remove a cache line from the cache without 
-affecting the rest of the cache state, this function created instead is only able to evict the entire set.
+affecting the rest of the cache state, the function created is only able to evict the entire set.
 This enforces that the cache line referenced is evicted at the cost of evicting other lines, causing a performance
 decrease. Evicting the entire set is done by accessing the extra array addresses corresponding to the set 
 {\tt N * L1\_WAY} times, where {\tt N} is large enough to account for the random cache replacement policy. The larger
@@ -47,7 +47,7 @@ slower but more complicated "backing predictor" (BP). The NLP contains the Branc
 where more recent branches are cached alongside their target, a tag of the PC, and more metadata. Additionally,
 the NLP contains the Return Stack Buffer (RSB) which holds the return pointer for a {\tt ret} instruction. The BP
 consists of a large predictor such as a TAGE or GShare predictor which makes a more accurate prediction based on
-a larger view of the branch history \cite{b47}. For simplicity, the team decided to use a GShare predictor, since it is 
+a larger view of the branch history \cite{b47}. For simplicity, the team used a GShare predictor, since it is 
 easier to train and was fully functioning at the start of the project. The GShare predictor had a global history of 23 bits and history table containing 4096 
 counters. Since the global history was longer than the size of the table, the global history was hashed with the 
 instruction PC and folded to index into the history table. Additionally, when trying to
@@ -76,8 +76,8 @@ speculation is used to retrieve the secret value. This particular attack variant
 uses a cache side channel attack to leak the information by having a passed in value retrieve
 a secret value which is then used to index the "attacker array". After the attack is run, this 
 "attacker array" can be scanned and timed to determine the secret value based on the timings
-of cache hits. The psuedocode for this type of attack in \ref{code:spectre-v1-pseudo}
-demonstrates the concept of the attack using a C-like syntax.
+of cache hits. The psuedocode for this type of attack in Code \ref{code:spectre-v1-pseudo}
+demonstrates the attack concept using a C-like syntax.
 
 \begin{lstlisting}[style=column-code, caption=Psuedocode of Bounds Check Bypass Attack]
 char* secret[] = "SECRET_VALUE"
@@ -102,20 +102,19 @@ int main(void){
     t1 = time()
   }
 }
-\end{lstlisting}
-\label{code:spectre-v1-pseudo}
+\end{lstlisting} \label{code:spectre-v1-pseudo}
 
 % TODO: double check the bpu hashing
 
-The BOOM implementation of this attack echos the Spectre-v1 PoC and the psuedocode closely.
+The BOOM implementation of this attack echos the Spectre-v1 proof of concept and the psuedocode closely.
 It consists of three different parts. First, a tally buffer is cleared before reading a secret byte.
 This tally buffer is used to keep track of the amount of hits a secret value gets during the measurement
 phase. Next the array to be probed is evicted from the cache (the "attacker array" mentioned above), and
 the attacker trains the BPU to enter the bounds protected area within the victim function. Note that in
 this section, there is an extra loop that puts the branch history in a consistent state since the branch
 history is hashed on update. Finally, the attacker code reads out the probing array through using the
-{\tt rdcycle} instruction and checking if the result is under a hand tuned cache threshold. Full code for 
-this attack is at \ref{code:boom-spectre-v1}.
+{\tt rdcycle} instruction and checks if the result is under a hand tuned cache threshold. Full code for 
+this attack is at Code \ref{code:boom-spectre-v1}.
 
 \subsection{Branch Target Injection Attack}
 

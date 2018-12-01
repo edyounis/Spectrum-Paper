@@ -1,8 +1,8 @@
 \section{Proposed Taxonomy} \label{Proposed Taxonomy}
 
-In this section we discuss our classification of speculative attacks and mitigations in Figure \ref{fig:categorization}.
+In this section, we discuss our classification of speculative attacks and mitigations in Figure \ref{fig:categorization}.
 This taxonomy was built from the perspective of a single core architecture.
-Additionally, our threat model includes only an adversary who can arbitrarly read data from the cache and write speculative data to the cache.
+Additionally, our threat model only includes an adversary who can arbitrarily read data from the cache and write speculative data to the cache.
 
 For the attacks section, we separated attacks based off whether the attack is architecturally legal or not.
 In a situation where an illegal action was performed, a fault is raised.
@@ -18,7 +18,7 @@ Changed modules imply a change to the function of an existing hardware component
 Firmware was seperated into it's own category because the implementation effort is drastically different than the implementation of hardware or software.
 At the top, software defenses are split only into two categories, OS and application level mitigations.
 This is done because both operating systems and applications cannot always be trusted.
-Depending on the users threat model, a conclusion can be reached on which mitigations to assume or implement.
+Depending on the users threat model, a conclusion can be reached using the taxonomy on which mitigations to assume or implement.
 
 \begin{center}
 \begin{figure}[hbtp]
