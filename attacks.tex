@@ -36,7 +36,7 @@ This enforces that the cache line referenced is evicted at the cost of evicting 
 decrease. Evicting the entire set is done by accessing the extra array addresses corresponding to the set 
 {\tt N * L1\_WAY} times, where {\tt N} is large enough to account for the random cache replacement policy. The larger
 the {\tt N} value, the higher probability that the particular cache line is evicted from the set. For our purposes, this value
-was chosen to be {\tt N = 4} in order to have a high probability of evicting the referenced cache line.
+was chosen to be {\tt N = 4} in order to have a 99\% probability of evicting the referenced cache line.
 
 \subsubsection{BOOM Branch Predictor Unit}
 
