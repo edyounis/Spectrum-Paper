@@ -13,7 +13,6 @@ arithmetic to figure out which entry to index into to evict the requested cache 
 This decreases the amount of extra memory needed to run the function while allowing the statically
 allocated array to reside at any memory location. Additionally, if the attacker knew the addresses of
 the secret and probe arrays, it could more precisely determine which cache lines to evict and test.
-%the function to predetermine which addresses can be accessed to evict any particular line in the cache instead of doing arithmetic to index into the extra array and having multiple branches that may misspeculate.
 
 In addition to improving the cache line flush function, another
 improvement can be to tweak the different attack parameters. This includes
@@ -33,16 +32,14 @@ TAGE predictor.
 
 \subsection{Further Evaluations}
 
-We plan to perform a more through evaluation of the performance and security implications of the
+We plan to perform a more thorough evaluation of the performance and security implications of the
 SpecBuf with more workloads, in addition to Dhrystone. At evaluation, the SpecBuf was unable to boot
 RISC-V Linux on FireSim and therefore we were unable to run the SPEC2017 suite \cite{b50}.
 Additionally, the SpecBuf was unable to run the CoreMark EEMBC benchmark suite due to bugs that
 occurred 5M cycles into the suite \cite{b51}. We plan to resolve these bugs and perform a more
 thorough evaluation of the SpecBuf. We also plan to configure multiple design
-points of the SpecBuf with multiple implementations of the PnR head and refill/replay system, and compare the tradeoffs of each implementation.
-
-%Get better synthesis data from HAMMER \cite{b52}. Instead of using flops use sram to have a minimal 
-%physical impact.
+points of the SpecBuf with multiple implementations of the PNR head and refill/replay system,
+and compare the tradeoffs of each implementation.
 
 \subsection{BOOM Improvements}
 
