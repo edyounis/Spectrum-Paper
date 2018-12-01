@@ -79,7 +79,7 @@ a secret value which is then used to index the "attacker array". After the attac
 of cache hits. The psuedocode for this type of attack in Code \ref{code:spectre-v1-pseudo}
 demonstrates the attack concept using a C-like syntax.
 
-\begin{lstlisting}[style=column-code, caption=Psuedocode of Bounds Check Bypass Attack]
+\begin{lstlisting}[style=column-code, label={code:spectre-v1-pseudo}, caption=Psuedocode of Bounds Check Bypass Attack]
 char* secret[] = "SECRET_VALUE"
 char  attackArray[256 * CACHE_BLOCK_SZ]
 
@@ -102,7 +102,7 @@ int main(void){
     t1 = time()
   }
 }
-\end{lstlisting} \label{code:spectre-v1-pseudo}
+\end{lstlisting}
 
 % TODO: double check the bpu hashing
 
@@ -124,10 +124,10 @@ the attacker trains a BTB entry for a {\tt jalr} instruction to point to
 the victim code. Then during the attack run, when the {\tt jalr} is supposed to go to another function,
 the BTB redirects the PC to the victim code where it speculatively leaks the secret value. Similar to the
 Bounds Check Bypass attack, this attack leaks information through the
-cache side channel mentioned in \ref{Bounds Check Bypass Attack}. The psuedocode in 
-\ref{code:spectre-v2-pseudo} demonstrates the basic principle of the attack using a C-like syntax.
+cache side channel mentioned in Section \ref{Bounds Check Bypass Attack}. The psuedocode in 
+Code \ref{code:spectre-v2-pseudo} demonstrates the basic principle of the attack using a C-like syntax.
 
-\begin{lstlisting}[style=column-code, caption=Psuedocode of Bounds Check Bypass Attack]
+\begin{lstlisting}[style=column-code, label={code:spectre-v2-pseudo}, caption=Psuedocode of Bounds Check Bypass Attack]
 char* secret[] = "SECRET_VALUE"
 char  attackArray[256 * CACHE_BLOCK_SZ]
 
@@ -156,10 +156,9 @@ int main(void){
   }
 }
 \end{lstlisting}
-\label{code:spectre-v2-pseudo}
 
 The BOOM implementation of this attack is very similar to the implementation given for
-the Bounds Check Bypass attack listed in \ref{Bounds Check Bypass Attack}. One of the main differences
+the Bounds Check Bypass attack listed in Section \ref{Bounds Check Bypass Attack}. One of the main differences
 for this attack is that the attacker has to change both the address of the function being called through
 {\tt jalr} and the passed in value to the victim function throughout the training and the attack run.
 Another difference between the two attacks is that the {\tt fdiv} manipulation is instead done on the target address

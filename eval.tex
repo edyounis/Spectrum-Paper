@@ -26,91 +26,90 @@ cycle-accurate, FPGA-accelerated scale-out computer system simulation platform \
 \end{tabular}
 \end{table}
 
-\begin{tikzpicture}
-\begin{axis}[
-    title={Speed of Replicated Attacks},
-    ylabel={Cycles},
-    xlabel={Secret Byte Read In},
-    xmin=0, xmax=25,
-    ymin=860000, ymax=940000,
-    legend pos=north east,
-    ymajorgrids=true,
-    grid style=dashed
-]
+\begin{figure}
+    \begin{tikzpicture}
+        \begin{axis}[
+            ylabel={Cycles},
+            xlabel={Secret Byte Read In},
+            xmin=0, xmax=25,
+            ymin=860000, ymax=940000,
+            legend pos=north east,
+            ymajorgrids=true,
+            grid style=dashed
+        ]
+            \addplot[
+                color=blue,
+                mark=square,
+            ]
+            coordinates {
+                (0 ,934580)
+                (1 ,884322)
+                (2 ,884387)
+                (3 ,881845)
+                (4 ,880847)
+                (5 ,882446)
+                (6 ,884498)
+                (7 ,880939)
+                (8 ,882241)
+                (9 ,882006)
+                (10,880994)
+                (11,881965)
+                (12,882634)
+                (13,882954)
+                (14,882156)
+                (15,883738)
+                (16,884212)
+                (17,881912)
+                (18,882980)
+                (19,883142)
+                (20,882600)
+                (21,882739)
+                (22,882989)
+                (23,879563)
+                (24,880698)
+                (25,883218)
+            };
+                    
+            \addplot[
+                color=green,
+                mark=triangle,
+            ]
+            coordinates {
+                (0 ,925862)
+                (1 ,874188)
+                (2 ,874815)
+                (3 ,873968)
+                (4 ,874626)
+                (5 ,874778)
+                (6 ,873466)
+                (7 ,876281)
+                (8 ,874361)
+                (9 ,874297)
+                (10,876153)
+                (11,875000)
+                (12,875435)
+                (13,873015)
+                (14,877303)
+                (15,874572)
+                (16,872902)
+                (17,875761)
+                (18,874966)
+                (19,874715)
+                (20,872514)
+                (21,872346)
+                (22,875481)
+                (23,875161)
+                (24,874325)
+                (25,875371)
+            };
+            \legend{Bounds Check Bypass,Branch Target Injection}
+        \end{axis}
+    \end{tikzpicture}
+    \caption{Speed of Replicated Attacks}
+    \label{fig:speed-attacks}
+\end{figure}
 
-\addplot[
-    color=blue,
-    mark=square,
-]
-coordinates {
-    (0 ,934580)
-    (1 ,884322)
-    (2 ,884387)
-    (3 ,881845)
-    (4 ,880847)
-    (5 ,882446)
-    (6 ,884498)
-    (7 ,880939)
-    (8 ,882241)
-    (9 ,882006)
-    (10,880994)
-    (11,881965)
-    (12,882634)
-    (13,882954)
-    (14,882156)
-    (15,883738)
-    (16,884212)
-    (17,881912)
-    (18,882980)
-    (19,883142)
-    (20,882600)
-    (21,882739)
-    (22,882989)
-    (23,879563)
-    (24,880698)
-    (25,883218)
-};
-        
-\addplot[
-    color=green,
-    mark=triangle,
-]
-coordinates {
-    (0 ,925862)
-    (1 ,874188)
-    (2 ,874815)
-    (3 ,873968)
-    (4 ,874626)
-    (5 ,874778)
-    (6 ,873466)
-    (7 ,876281)
-    (8 ,874361)
-    (9 ,874297)
-    (10,876153)
-    (11,875000)
-    (12,875435)
-    (13,873015)
-    (14,877303)
-    (15,874572)
-    (16,872902)
-    (17,875761)
-    (18,874966)
-    (19,874715)
-    (20,872514)
-    (21,872346)
-    (22,875481)
-    (23,875161)
-    (24,874325)
-    (25,875371)
-};
-\legend{Bounds Check Bypass,Branch Target Injection}
-
-\end{axis}
-\end{tikzpicture}
-
-\begin{lstlisting}[style=column-code, caption=Printout of Bounds Check Bypass Attack]
-want(!) =?= 1.(!) 2.(^A)
-want(") =?= 1.(") 2.(^A)
+\begin{lstlisting}[style=column-code, label={code:spec-attack-printout}, caption=Printout of Bounds Check Bypass Attack]
 want(#) =?= 1.(#) 2.( C)
 want(T) =?= 1.(T) 2.(^A)
 want(h) =?= 1.(h) 2.(i)
@@ -136,7 +135,6 @@ want(e) =?= 1.(e) 2.(^O)
 want(s) =?= 1.(s) 2.(^D)
 want(t) =?= 1.(t) 2.(^A)
 \end{lstlisting}
-\label{code:spec-attack-printout}
 
 \subsection{Replicating Speculative Attacks Results}
 
@@ -144,7 +142,8 @@ Overall, the attacks chosen were replicated successfully on the BOOM microarchit
 demonstrating leakage of secret information with the Bounds Check Bypass attack
 is shown in Code \ref{code:spec-attack-printout}. Initial results of the replications
 are promising with around 3.6KB/s for both attacks. Table \ref{tab:spec-attack-results}
-shows the results of the two attacks. These measurements take into account the clearing
+shows the results of the two attacks while Figure \ref{fig:speed-attacks} shows the cycles per secret byte read out.
+These measurements take into account the clearing
 of the tally array before each run, the multiple rounds of training for the BPU,
 the single attack run on the victim, and the time to measure out the secret from the attacker array.
 The cycle times are close to each other because the code shares a similar structure. The main
@@ -220,7 +219,7 @@ Enabling the SpecBuf granted a 2\% increase in Dhrystone performance, seen below
 \begin{tabular}{@{} *4l @{}} \toprule
     & \multicolumn{2}{l}{Version of BOOM} & \\
     Benchmark                           & Normal & SpecBuf & \% Diff.\\ \midrule
-    Non-spec. LD misses   & 540 cycles & 640 cycles & +19\%    \\
+    Non-spec. LD misses   & 540 cycles & 640 cycles & -19\%    \\
     to same sets            &            &            & \\ \midrule
     Non-spec. LD misses   & 264 cycles & 297 cycles & -11\%    \\ 
     to diff. sets           &            &            & \\ \midrule
@@ -230,8 +229,7 @@ Enabling the SpecBuf granted a 2\% increase in Dhrystone performance, seen below
 \end{tabular}
 \end{table}
 
-\subsubsection{Synthesis Results}
-\label{syn}
+\subsubsection{Synthesis Results} \label{Synthesis Results}
 Trial synthesis of BOOM with our SpecBuf in a 45nm technology resulted in a 2.5\% increase in area and a 0.36\% decrease in clock frequency.
 
 
