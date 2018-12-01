@@ -6,7 +6,7 @@
 \label{tab:spec-attack-results}
 \begin{tabular}{@{} *4l @{}} \toprule
     &                        & \multicolumn{2}{l}{Bytes per Second} \\
-    Attack                  & Cycles for Secret Byte &           100MHz &   3.2GHz \\ \midrule
+    Attack                  & Cycles for Secret Byte &           100 MHz &   3.2 GHz \\ \midrule
     Bounds Check Bypass     &                ~884485 &          ~113 B/s & ~3618 B/s \\
     Branch Target Injection &                ~876602 &          ~114 B/s & ~3650 B/s \\ \bottomrule
 \end{tabular}
@@ -19,6 +19,7 @@
     Fetch Width                  & 2 \\
     Decode Width                 & 2 \\
     Issue Width                  & 4 \\
+    PRF Size                     & 100 \\
     ROB Size                     & 100 \\ \midrule
     L1 Sets                      & 64 \\
     L1 Ways                      & 8 \\
@@ -227,6 +228,8 @@ flow was speculated to be correct, then any following loads that have the same s
 This microbenchmark shows this performance hit on the first load that occurs after this case.
 
 \subsubsection{Dhrystone Results}
+Enabling the SpecBuf granted a 2\% increase in Dhrystone performance, seen below in \ref{tab:spec-buf-results}. There are several factors which may contribute to this small performance gain. The SpecBuf delays the eviction of old cachelines until the refill is known to commit, allowing hits on the old cacheline in the intervening cycles. Additionally, the SpecBuf decreases the latency of missed loads: this is because refill requests can be sent to the bus earlier, and the retured data can be forwarded out of the buffer as soon as it is available, rather than waiting for the update of cache metadata.
 
 \subsubsection{Synthesis Results}
-
+\label{syn}
+Trial synthesis of BOOM with our SpecBuf in a 45nm technology resulted in a 2.5\% increase in area and a 0.36\% decrease in clock frequency.
