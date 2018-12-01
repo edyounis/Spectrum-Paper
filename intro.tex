@@ -2,10 +2,10 @@
 
 Ever since the disclosure of Spectre and Meltdown at the start of 2018, there has
 been a large number of attacks targeting speculative microarchitectural state in
-out-of-order processors \cite{b1,b2}. Each of these attacks is able to exploit the shared
+out-of-order processors \cite{b1,b2}. These attacks are able to exploit the shared
 state of the processor between a victim process/thread and a malicious process/thread.
-While classifications have been developed for cache-based and for timing-based 
-side-channel attacks \cite{b5,b6,b7,b9,b10}, a general taxonomy for these attacks has not been adopted.
+While classifications have been developed for speculative attacks 
+\cite{b5,b6,b7,b9,b10}, a general taxonomy for these attacks that is has not been adopted.
 A well-devised taxonomy would inform not only the 
 categorization of new attacks but also the development of hardware mitigations for 
 these attacks. A complete categorization system would help hardware researchers 
@@ -26,9 +26,9 @@ mitigation process. With an attack taxonomy and an open-source microarchitecture
 newly proposed mitigation technique can easily target a class of attacks as informed 
 by the taxonomy.
 
-The remainder of this paper is structured as follows: In Section 2, we discuss
+The remainder of this paper is structured as follows: In Section \ref{Related Works}, we discuss
 related works that indicate relevant work that introduces attacks, defenses, and classifications.
-In Section 3 we discuss our taxonomy and it's categorization of the attacks and defenses. In
-Section 4 we present the subset of attacks that were replicated for this paper. In Section 5
-we discuss the implementation of the SpecBuf. In Section 6 we discuss the evaluation of the
-replications and the SpecBuf. In Section 7 we discuss future work.
+In Section \ref{Proposed Taxonomy} we discuss our taxonomy and it's categorization of the attacks and defenses. In
+Section \ref{Speculative Attack Replication} we present the subset of attacks that were replicated for this paper. In Section \ref{Speculation Buffer}
+we discuss the implementation of the SpecBuf. In Section \ref{Evaluations} we discuss the evaluation of the
+replications and the SpecBuf. In Section \ref{Future Work} we discuss future work.

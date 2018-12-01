@@ -1,4 +1,4 @@
-\section{Future Work}
+\section{Future Work} \label{Future Work}
 
 \subsection{Bounds Check Bypass and Branch Target Injection Improvements}
 
@@ -52,6 +52,7 @@ load/store unit. Resolving these bugs would not only improve the performance our
 it would also further validate BOOM as a platform for secure hardware research.
 
 \subsubsection{Multi-ported Cache}
+
 The non-blocking L1 data cache employed in BOOM was designed with the in-order Rocket core in mind;
 is not ideal for a high performance out-of-order core. The cache does not have any concept of
 speculative execution, and contains many structures and provisions which are superfluous in an
@@ -61,13 +62,15 @@ Additionally, the cache is strictly single ported. In order to investigate high 
 of the BOOM core, a multi-ported data cache will be required.
 
 \subsubsection{SpecBuf Improvements}
-Our current SpecBuf implementation has several limitations, mentioned in \ref{specbuf}.
+
+Our current SpecBuf implementation has several limitations, mentioned in \ref{Speculation Buffer}.
 Among them are the lack of full-associativity, the inability to immediately deallocate killed MSHRs,
 and MSHR state sequences which are not fully optimized.
 To improve further upon our initial design, we would want to rearchitect BOOM's data cache from
 the ground up with speculative safety in mind. 
 
 \subsubsection{Multi-level Cache Hierarchy}
+
 The current SpecBuf addresses only a single level cache hierarchy.
 BOOM is currently configured with an L1 data cache and a large all-encompassing L2.
 In the future, it would be valuable to configure BOOM with a more realistic cache hierarchy,

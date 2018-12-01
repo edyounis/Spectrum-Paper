@@ -1,5 +1,5 @@
-\section{Speculation Buffer}
-\label{specbuf}
+\section{Speculation Buffer} \label{Speculation Buffer}
+
 The side-channel which forms the basis of multiple Spectre variants is the modification of data cache state during speculative execution.
 To improve performance, modern out-of-order cores will speculatively fetch data into the core on a load miss.
 However, in the event that the load miss is misspeculated, the refill data is still written into the cache, potentially evicting other resident cache lines.
