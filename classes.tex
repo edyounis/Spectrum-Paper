@@ -4,7 +4,7 @@ In this section we discuss our classification of speculative attacks and mitigat
 This taxonomy was built from the perspective of a single core architecture.
 Additionally, our threat model includes only an adversary who can arbitrarly read data from the cache and write speculative data to the cache.
 
-For the attacks section, we separated attacks based off whether the attack is architecturally a legal action or not.
+For the attacks section, we separated attacks based off whether the attack is architecturally legal or not.
 In a situation where an illegal action was performed, a fault is raised.
 The different types of attacks in this section are associated with different types of faults.
 However, the Page Fault has many different attacks associated with it that only differ on the permission bit abused in the attack.
@@ -12,7 +12,7 @@ This becomes another split in attack tree.
 The Spectre style attacks that abuse an architecturally legal action all target different hardware modules.
 This forms the split for that branch of the tree.
 
-Defenses are organized according to implementation location and cost.
+Defenses are similarly organized according to implementation location and cost.
 At the bottom of the stack we have the hardware mitigations, which are further divided into new modules or changed modules.
 Changed modules imply a change to the function of an existing hardware component, but a new module is an entirely new hardware idea.
 Firmware was seperated into it's own category because the implementation effort is drastically different than the implementation of hardware or software.
