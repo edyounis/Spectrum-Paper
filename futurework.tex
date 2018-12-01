@@ -16,7 +16,7 @@ the secret and probe arrays, it could more precisely determine which cache lines
 
 In addition to improving the cache line flush function, another
 improvement can be to tweak the different attack parameters. This includes
-the attack parameters listed in \ref{tab:attack-params}. Potentially, the amount of rounds on the
+the attack parameters listed in Table \ref{tab:attack-params}. Potentially, the amount of rounds on the
 same byte and training rounds can be reduced to improve the speed of the attack.
 These can be adjusted in conjunction with the cache flush hits on the same set so even though the 
 random cache replacement policy may not clear all the ways of the set, the amount of rounds on
@@ -60,11 +60,10 @@ of the BOOM core, a multi-ported data cache will be required.
 
 \subsubsection{SpecBuf Improvements}
 
-Our current SpecBuf implementation has several limitations, mentioned in \ref{Speculation Buffer}.
-Among them are the lack of full-associativity, the inability to immediately deallocate killed MSHRs,
-and MSHR state sequences which are not fully optimized.
-To improve further upon our initial design, we would want to rearchitect BOOM's data cache from
-the ground up with speculative safety in mind. 
+Our current SpecBuf implementation has several limitations, mentioned in Section \ref{Speculation Buffer}.
+Among them are the lack of full-associativity and the inability to immediately deallocate killed MSHRs.
+To improve further upon our initial design, we may want to rearchitect BOOM's data cache from
+the ground up with speculative safety in mind.
 
 \subsubsection{Multi-level Cache Hierarchy}
 

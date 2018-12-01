@@ -218,7 +218,7 @@ is a extra overhead of around 8 cycles for every 4 loads since the MSHR's are al
 buffer is {\tt CACHE\_LINE\_SZ / DATABUS\_WIDTH} or {\tt 64B / 8B = 8 cycles}.
 
 The final microbenchmark named "MSHR evicted speculative load miss" is used to test the impact when a load has to be evicted from the 
-MSHR due to a potential deadlock condition [described in \ref{}]. In the normal version of BOOM, if a speculative load is issued to the 
+MSHR due to a potential deadlock condition. In the normal version of BOOM, if a speculative load is issued to the 
 MSHR before a critical load that resolves the speculation, the speculative load will complete and
 write it's data to the cache. This will release the MSHR entry it occupied and allow the critical load to complete resolving the speculation. 
 However, the SpecBuf case, the speculative load will fill the data in the MSHR buffer, bypass the data to the microarchitectural register, 
