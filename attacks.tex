@@ -48,14 +48,12 @@ where more recent branches are cached alongside their target, a tag of the PC, a
 the NLP contains the Return Stack Buffer (RSB) which holds the return pointer for a {\tt ret} instruction. The BP
 consists of a large predictor such as a TAGE or GShare predictor which makes a more accurate prediction based on
 a larger view of the branch history \cite{b47}. For simplicity, the team decided to use a GShare predictor, since it is 
-easier to train and was fully functioning at the start of the project (the TAGE BP had multiple performance bugs
-associated with it). The GShare predictor used had a global history of 23 bits and history table containing 4096 
+easier to train and was fully functioning at the start of the project. The GShare predictor had a global history of 23 bits and history table containing 4096 
 counters. Since the global history was longer than the size of the table, the global history was hashed with the 
 instruction PC and folded to index into the history table. Additionally, when trying to
-implement the RSB attack, it was discovered that the RSB was disabled resulting in all {\tt ret} instructions
-to speculate to the next PC instead of the return target PC. Re-enabling the RSB lead to multiple other BPU bugs,
-so the team decided to keep the RSB disabled and instead implement the Branch Target Injection attack which did not
-use the RSB.
+implement the RSB attack, it was discovered that the RSB was disabled causing all {\tt ret} instructions
+to speculate to the next PC instead of the return target PC. Re-enabling the RSB led to multiple other BPU bugs,
+so we decided to keep the RSB disabled and instead implement the Branch Target Injection attack.
 
 \subsubsection{BOOM Memory System}
 
@@ -125,7 +123,7 @@ this attack is at \ref{code:boom-spectre-v1}.
 
 \subsection{Branch Target Injection Attack}
 
-This attack exploits the functionality of the BTB in predicting the outcome
+This attack exploits the outcome
 of {\tt jalr} instructions which use the BTB to predict the destination. In this attack,
 the attacker trains a BTB entry for a {\tt jalr} instruction to point to 
 the victim code. Then during the attack run, when the {\tt jalr} is supposed to go to another function,
