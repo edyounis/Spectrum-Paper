@@ -38,26 +38,25 @@ the speed of the attacks based these new predictors.
 \subsection{Further Evaluations}
 
 We plan to perform a more through evaluation of the performance and security implications of the
-speculation buffer after more validation on our design is complete. 
+SpecBuf after more validation on our design is complete. 
 Though the Dhrystone benchmark was able to be run, a more comprehensive benchmark suite would be invaluable to test
 the performance of the SpecBuf. At evaluation, the SpecBuf was unable to boot RISC-V Linux on FireSim and therefore
 we were unable to run the SPEC2017 suite \cite{b50}. Additionally, the SpecBuf was unable to run the CoreMark EEMBC benchmark
 suite due to bugs that occurred 5M cycles into the suite \cite{b51}. Thus, future work would be to fix the bugs preventing these
 benchmarks to run and reevaluate the results of the paper based on this new data. We also plan to configure multiple design
-points of the speculation buffer with multiple implementations of the PnR head and refill/replay system.
+points of the SpecBuf with multiple implementations of the PnR head and refill/replay system.
 
 Get better synthesis data from HAMMER \cite{b52}. Instead of using flops use sram to have a minimal 
 physical impact.
 
 \subsection{BOOM Improvements}
-
 Future work for the project also involves bringing BOOM to a more stable version. Throughout
 the project, a multitude of performance-reducing bugs were found both in the front-end (fetch stage, BPU, etc) and the 
 load/store unit that the team had to work around. With these fixed, not only will performance
 of the core improve, but other replication and modifications to the core will be easier since
 the base core will be stable and provide more reliable performance metrics.
 
-\subsubsection{Multi-ported Cache}
+\subsubsection{BOOM-oriented Cache}
 The non-blocking L1 data cache employed in BOOM was designed with the in-order Rocket core in mind; is not ideal for
 a high performance out-of-order core. This is for several reasons.
 
@@ -68,19 +67,18 @@ concept of speculative execution by propagating the necessary signals through th
 Second, the cache contains many structures and provisions which are superfluous in an out-of-order core.
 For instance, the job of the replay queues would be better handled by the core's load/store unit itself.
 
-Finally, the cache is strictly single ported. In order to investigate high performance variants of the BOOM core,
-a multi-ported data cache will be required.
+Finally, the cache is strictly single ported, and does not perform optimizations such as store coalescing. In order to investigate higher performance variants of the BOOM core, a high performance multi-ported data cache will be required.
 
-\subsubsection{Speculation Buffer Improvements}
-Our current speculation buffer implementation has several limitations, mentioned in \ref{specbuf}.
+\subsubsection{SpecBuf Improvements}
+Our current SpecBuf implementation has several limitations, mentioned in \ref{specbuf}.
 Among them are the lack of full-associativity, the inability to immediately deallocate killed MSHRs, and MSHR state sequences which are not fully optimized.
-We may be able to implement some of these improvements in our proof-of-concept speculation buffer, but others would be more difficult. To improve further upon
-our proof-of-concept, we may be better served by looking at re-architecting BOOM's data cache with speculative safety in mind. This builds upon our other thoughts
+We may be able to implement some of these improvements in our proof-of-concept SpecBuf, but others would be more difficult. To improve further upon
+our proof-of-concept, we may be better served by investigating a re-architecting of BOOM's data cache with speculative safety in mind. This builds upon our other thoughts
 on BOOM's data cache mentioned above.
 
 \subsubsection{Multi-level Cache Hierarchy}
-The current speculation buffer addresses only a single level cache hierarchy.
-BOOM is currently configured with an L1 data cache and a large scratchpad memory.
+The current SpecBuf addresses only a single level cache hierarchy.
+BOOM is currently configured with an L1 data cache and a large scratchpad memory in lieu of an L2.
 In the future, it would be valuable to configure BOOM with a more realistic cache hierarchy,
 such as with a large L2 shared between several cores. This would lend towards an extension of the speculation
 buffer strategy to protect this realistic hierarchy.

@@ -1,25 +1,16 @@
 \section{Evaluations}
 
-\begin{table}
-\centering
-\caption{Speculative Attack Results}
-\label{tab:spec-attack-results}
-\begin{tabular}{@{} *4l @{}} \toprule
-    &                        & \multicolumn{2}{l}{Bytes per Second} \\
-    Attack                  & Cycles for Secret Byte &           100MHz &   3.2GHz \\ \midrule
-    Bounds Check Bypass     &                ~884485 &          ~113 B/s & ~3618 B/s \\
-    Branch Target Injection &                ~876602 &          ~114 B/s & ~3650 B/s \\ \bottomrule
-\end{tabular}
-\end{table}
+\subsection{Base Core Parameters}
 
-\begin{table}
+\begin{table}[h]
 \centering \caption{BOOM Core Parameters} \label{tab:boom-core-params}
 \begin{tabular}{@{} *2l @{}} \toprule
     Parameter                    & Value \\ \midrule
     Fetch Width                  & 2 \\
     Decode Width                 & 2 \\
     Issue Width                  & 4 \\
-    ROB Size                     & 100 \\ \midrule
+    ROB Size                     & 100 \\
+    Int PRF Size                 & 100 \\ \midrule
     L1 Sets                      & 64 \\
     L1 Ways                      & 8 \\
     L1 Linesize                  & 64 bytes \\ \midrule
@@ -31,7 +22,13 @@
 \end{tabular}
 \end{table}
 
-\begin{table}
+The two different attacks were replicated on the BOOM core with the parameters given
+in \ref{tab:boom-core-params}. All attacks were measured using FireSim, an open-source
+cycle-accurate, FPGA-accelerated scale-out computer system simulation platform \cite{b12}.
+
+\subsection{Replicating Speculative Attacks Results}
+
+\begin{table}[h]
 \centering
 \caption{Attack Parameters}
 \label{tab:attack-params}
@@ -43,24 +40,31 @@
     Cache flush hits on same set & 4 * L1\_WAYS \\
     GShare Counter Table Entries & 4096 \\ \bottomrule
 \end{tabular}
-\end{table} 
+\end{table}
 
-\begin{table}
+\begin{table}[h]
 \centering
-\caption{SpecBuf Results}
-\label{tab:spec-buf-results}
+\caption{Speculative Attack Results}
+\label{tab:spec-attack-results}
 \begin{tabular}{@{} *4l @{}} \toprule
-    & \multicolumn{2}{l}{Version of BOOM} & \\
-    Benchmark                           & Normal & SpecBuf & \% Diff.\\ \midrule
-    Non-spec. load misses   & 540 cycles & 513 cycles & +5\%    \\
-    to same sets            &            &            & \\ \midrule
-    Non-spec. load misses   & 264 cycles & 297 cycles & -11\%    \\ 
-    to diff. sets           &            &            & \\ \midrule
-    MSHR evicted speculative & 171 cycles & 171 cycles & 0\%    \\
-    load miss                &            &            & \\ \midrule
-    Dhrystone                           & 2176 Dhrystones/s & 2216 Dhrystones/s & +2\%\\ \bottomrule
+    &                        & \multicolumn{2}{l}{Bytes per Second} \\
+    Attack                  & Cycles for Secret Byte &           100 MHz &   3.2 GHz \\ \midrule
+    Bounds Check Bypass     &                ~884485 &          ~113 B/s & ~3618 B/s \\
+    Branch Target Injection &                ~876602 &          ~114 B/s & ~3650 B/s \\ \bottomrule
 \end{tabular}
 \end{table}
+
+Overall, the attacks chosen were replicated successfully on the BOOM microarchitecture. A printout
+demonstrating leakage of secret information with the Bounds Check Bypass attack
+is shown in \ref{code:spec-attack-printout}. Initial results of the replications
+are promising with around 3.6KB/s for both attacks. \ref{tab:spec-attack-results}
+shows the results of the two attacks. These measurements take into account the clearing
+of the tally array before each run, the multiple rounds of training for the BPU,
+the single attack run on the victim, and the time to measure out the secret from the attacker array.
+The cycle times are close to each other because the code shares a similar structure. The main
+differences are around the setup of the {\tt fdiv} manipulation
+and the extra arithmetic in the Branch Target Injection attack where you have to calculate
+both the index and the address for accessing the function and passing the input. 
 
 \begin{tikzpicture}
 \begin{axis}[
@@ -144,26 +148,6 @@ coordinates {
 \end{axis}
 \end{tikzpicture}
 
-\subsection{Base Core Parameters}
-
-The two different attacks were replicated on the BOOM core with the parameters given
-in \ref{tab:boom-core-params}. All attacks were measured using FireSim, an open-source
-cycle-accurate, FPGA-accelerated scale-out computer system simulation platform \cite{b12}.
-
-\subsection{Replicating Speculative Attacks Results}
-
-Overall, the attacks chosen were replicated successfully on the BOOM microarchitecture. A printout
-demonstrating leakage of secret information with the Bounds Check Bypass attack
-is shown in \ref{code:spec-attack-printout}. Initial results of the replications
-are promising with around 3.6KB/s for both attacks. \ref{tab:spec-attack-results}
-shows the results of the two attacks. These measurements take into account the clearing
-of the tally array before each run, the multiple rounds of training for the BPU,
-the single attack run on the victim, and the time to measure out the secret from the attacker array.
-The cycle times are close to each other because the code shares a similar structure. The main
-differences are around the setup of the {\tt fdiv} manipulation
-and the extra arithmetic in the Branch Target Injection attack where you have to calculate
-both the index and the address for accessing the function and passing the input. 
-
 \begin{lstlisting}[style=column-code, caption=Printout of Bounds Check Bypass Attack]
 want(!) =?= 1.(!) 2.(^A)
 want(") =?= 1.(") 2.(^A)
@@ -198,7 +182,7 @@ want(t) =?= 1.(t) 2.(^A)
 
 We evaluated our SpecBuf implementation using three small microbenchmarks, Dhrystone and the 
 replicated attacks. The SpecBuf shows a small increase in performance in initial tests while providing
-a defense against the replicated attacks demonstrated.
+a defense against the replicated attacks.
 
 \subsubsection{Microbenchmark Explanations and Results}
 
@@ -218,3 +202,22 @@ register. However, the data from this speculative load will not be put in the ca
 loads depending on this evicted load will first miss.
 
 \subsubsection{Dhrystone Results}
+
+Enabling the SpecBuf granted a $2\%$ increase in Dhrystone performance, seen below in \ref{tab:spec-buf-results}. There are several factors which may contribute to this small performance gain. The SpecBuf delays the eviction of old cachelines until the refill is known to commit, allowing hits on the old cacheline in the intervening cycles. Additionally, the SpecBuf decreases the latency of missed loads: this is because refill requests can be sent to the bus earlier, and the retured data can be forwarded out of the buffer as soon as it is available, rather than waiting for the update of cache metadata.
+
+\begin{table}[h]
+\centering
+\caption{SpecBuf Results}
+\label{tab:spec-buf-results}
+\begin{tabular}{@{} *4l @{}} \toprule
+    & \multicolumn{2}{l}{Version of BOOM} & \\
+    Benchmark                           & Normal & SpecBuf & \% Diff.\\ \midrule
+    Non-spec. load misses   & 540 cycles & 513 cycles & +5\%    \\
+    to same sets            &            &            & \\ \midrule
+    Non-spec. load misses   & 264 cycles & 297 cycles & -11\%    \\ 
+    to diff. sets           &            &            & \\ \midrule
+    MSHR evicted speculative & 171 cycles & 171 cycles & 0\%    \\
+    load miss                &            &            & \\ \midrule
+    Dhrystone                           & 2176 Dhrystones/s & 2216 Dhrystones/s & +2\%\\ \bottomrule
+\end{tabular}
+\end{table}
