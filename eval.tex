@@ -207,14 +207,14 @@ were when the MSHR was unable to allocated entries for each new load. This micro
 tags but the same index, thus in BOOM's MSHR, only one entry would be able to be allocated at a time. When using the SpecBuf, the 
 behavior is similar. The main difference is that on each load, the data from cache hierarchy must first fill the MSHR buffer
 before the cache. This causes a small performance decrease for each load. Since our benchmark has 16 loads, this results in a performance decrease of around
-{\tt 16 loads * (CACHE_LINE_SZ / DATABUS_WIDTH)} or {\tt 16 * (64B / 8B) = 128 cycles}.
+{\tt 16 loads * (CACHE\_LINE\_SZ / DATABUS\_WIDTH)} or {\tt 16 * (64B / 8B) = 128 cycles}.
 
 The second microbenchmark named "Non-speculative load misses to different sets" is similar to the first except that each subsequent
 load is accessing a different set in the cache. In the normal version of BOOM, the MSHR's would fill up completely but then stall 
 when full until a prior MSHR entry would be freed (when a previous load is completed). When using the SpecBuf, there is a
 higher performance penalty because the data must fill the MSHR buffer with the cache data before filling the cache. Thus, there 
 is a extra overhead of around 8 cycles for every 4 loads since the MSHR's are allocated waves of 4 and the fill latency to the MSHR
-buffer is {\tt CACHE_LINE_SZ / DATABUS_WIDTH} or {\tt 64B / 8B = 8 cycles}.
+buffer is {\tt CACHE\_LINE\_SZ / DATABUS\_WIDTH} or {\tt 64B / 8B = 8 cycles}.
 
 The final microbenchmark named "MSHR evicted speculative load miss" is used to test the impact when a load has to be evicted from the 
 MSHR due to a potential deadlock condition [described in \ref{}]. In the normal version of BOOM, if a speculative load is issued to the 
