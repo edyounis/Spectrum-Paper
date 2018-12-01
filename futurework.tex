@@ -2,18 +2,18 @@
 
 \subsection{Bounds Check Bypass and Branch Target Injection Improvements}
 
-While the replicated attacks are a PoC of a subset of speculative style attacks that BOOM
-is susceptible to, future work can improve the secret leakage rate of the attacks.
+The replicated attacks are only a subset of speculative style attacks that out-of-order
+microarchitectures are susceptible to. In future work, we plan on both improving the efficiency of
+our replicated attacks, and demonstrating more variants of these exploits.
 
-One of the mechanisms to speed up both attacks is the improving the hand-made L1 cache line flush function
-used. The current implementation uses a large extra array that is indexed into to evict a particular
-cache set. Another approach, would be to just have this extra array be the size of the L1 cache and use
-arithmetic to figure out which entry to index into to evict the requested cache line. This decreases the
-amount of extra memory needed to run the function while allowing the statically allocated array to reside
-at any memory location. Additionally, another approach to speeding up the function is to know where the
-secret and probed array reside in memory. This allows the function to predetermine which addresses can be 
-accessed to evict any particular line in the cache instead of doing arithmetic to index into the extra array and
-having multiple branches that may misspeculate.
+One potential mechanism to speed up both attacks is to improve our hand-made L1 cache line flush
+function. The current implementation indexes a large extra array to to evict a particular cache set.
+Another approach, would be to just have this extra array be the size of the L1 cache and use
+arithmetic to figure out which entry to index into to evict the requested cache line.
+This decreases the amount of extra memory needed to run the function while allowing the statically
+allocated array to reside at any memory location. Additionally, if the attacker knew the addresses of
+the secret and probe arrays, it could more precisely determine which cache lines to evict and test.
+%the function to predetermine which addresses can be accessed to evict any particular line in the cache instead of doing arithmetic to index into the extra array and having multiple branches that may misspeculate.
 
 In addition to improving the cache line flush function, another
 improvement can be to tweak the different attack parameters. This includes
@@ -25,62 +25,52 @@ the same byte might remove the false hits when the specified line was not evicte
 
 \subsection{Other Attacks and More BOOM Configurations}
 
-In addition to the two attacks that were implemented, BOOM is susceptible to a variety of
-other speculative style attacks. One such example is the RSB attack, which our team was 
-originally planning on implementing. However, due to BOOM not have a working configuration
-with the RSB at the time, this attack was not implemented in liew of implementing the Branch Target
-Injection attack. By fixing the RSB, the team could work on implementing this attack with the 
-code that was initially created for it. Another improvement to the project would be to train the
-variety of attacks on different branch predictors. Since BOOM provides a mechanism to add branch 
-predictors and it already has a TAGE predictor, future work can use this functionality to determine
-the speed of the attacks based these new predictors.
+BOOM is susceptible to a variety of other speculative style attacks. One such example is the RSB
+attack. In the future, we plan on fixing BOOM's RSB so we can demonstrate this exploit.
+Another improvement to the project would be to train the attacks on different branch predictors.
+Specifically, we would like to evaluate the efficiency of these attacks on a high-performance
+TAGE predictor.
 
 \subsection{Further Evaluations}
 
 We plan to perform a more through evaluation of the performance and security implications of the
-SpecBuf after more validation on our design is complete. 
-Though the Dhrystone benchmark was able to be run, a more comprehensive benchmark suite would be invaluable to test
-the performance of the SpecBuf. At evaluation, the SpecBuf was unable to boot RISC-V Linux on FireSim and therefore
-we were unable to run the SPEC2017 suite \cite{b50}. Additionally, the SpecBuf was unable to run the CoreMark EEMBC benchmark
-suite due to bugs that occurred 5M cycles into the suite \cite{b51}. Thus, future work would be to fix the bugs preventing these
-benchmarks to run and reevaluate the results of the paper based on this new data. We also plan to configure multiple design
-points of the SpecBuf with multiple implementations of the PnR head and refill/replay system.
+SpecBuf with more workloads, in addition to Dhrystone. At evaluation, the SpecBuf was unable to boot
+RISC-V Linux on FireSim and therefore we were unable to run the SPEC2017 suite \cite{b50}.
+Additionally, the SpecBuf was unable to run the CoreMark EEMBC benchmark suite due to bugs that
+occurred 5M cycles into the suite \cite{b51}. We plan to resolve these bugs and perform a more
+thorough evaluation of the SpecBuf. We also plan to configure multiple design
+points of the SpecBuf with multiple implementations of the PnR head and refill/replay system, and compare the tradeoffs of each implementation.
 
-Get better synthesis data from HAMMER \cite{b52}. Instead of using flops use sram to have a minimal 
-physical impact.
+%Get better synthesis data from HAMMER \cite{b52}. Instead of using flops use sram to have a minimal 
+%physical impact.
 
-\subsection{BOOM Improvements}
+%\subsection{BOOM Improvements}
 
 Future work for the project also involves bringing BOOM to a more stable version. Throughout
-the project, a multitude of performance-reducing bugs were found both in the front-end (fetch stage, BPU, etc) and the 
-load/store unit that the team had to work around. With these fixed, not only will performance
-of the core improve, but other replication and modifications to the core will be easier since
-the base core will be stable and provide more reliable performance metrics.
+the project, many performance-reducing bugs were found both in the front-end and the 
+load/store unit. Resolving these bugs would not only improve the performance our replicated attacks,
+it would also further validate BOOM as a platform for secure hardware research.
 
 \subsubsection{Multi-ported Cache}
-The non-blocking L1 data cache employed in BOOM was designed with the in-order Rocket core in mind; is not ideal for
-a high performance out-of-order core. This is for several reasons.
+The non-blocking L1 data cache employed in BOOM was designed with the in-order Rocket core in mind;
+is not ideal for a high performance out-of-order core. The cache does not have any concept of
+speculative execution, and contains many structures and provisions which are superfluous in an
+out-of-order core. Some of the L1 structures, like the replay queues and store data queues, would be
+better handled within the core's load/store unit itself.
 
-Firstly the cache does not have any concept of speculative execution.
-In the baseline version of BOOM, this is bridged with an external ``data cache shim'' structure. We have further introduced the cache to the
-concept of speculative execution by propagating the necessary signals through the first two stages and into the MSHR file.
-
-Second, the cache contains many structures and provisions which are superfluous in an out-of-order core.
-For instance, the job of the replay queues would be better handled by the core's load/store unit itself.
-
-Finally, the cache is strictly single ported. In order to investigate high performance variants of the BOOM core,
-a multi-ported data cache will be required.
+Finally, the cache is strictly single ported. In order to investigate high performance variants
+of the BOOM core, a multi-ported data cache will be required.
 
 \subsubsection{SpecBuf Improvements}
 Our current SpecBuf implementation has several limitations, mentioned in \ref{specbuf}.
-Among them are the lack of full-associativity, the inability to immediately deallocate killed MSHRs, and MSHR state sequences which are not fully optimized.
-We may be able to implement some of these improvements in our proof-of-concept SpecBuf, but others would be more difficult. To improve further upon
-our proof-of-concept, we may be better served by looking at re-architecting BOOM's data cache with speculative safety in mind. This builds upon our other thoughts
-on BOOM's data cache mentioned above.
+Among them are the lack of full-associativity, the inability to immediately deallocate killed MSHRs,
+and MSHR state sequences which are not fully optimized.
+To improve further upon our initial design, we would want to rearchitect BOOM's data cache from
+the ground up with speculative safety in mind. 
 
 \subsubsection{Multi-level Cache Hierarchy}
 The current SpecBuf addresses only a single level cache hierarchy.
-BOOM is currently configured with an L1 data cache and a large scratchpad memory.
+BOOM is currently configured with an L1 data cache and a large all-encompassing L2.
 In the future, it would be valuable to configure BOOM with a more realistic cache hierarchy,
-such as with a large L2 shared between several cores. This would lend towards an extension of the speculation
-buffer strategy to protect this realistic hierarchy.
+such as with a large L2 shared between several cores. The technique described in this paper
+could be potentially extended to support multi-level cache hierarchies.
