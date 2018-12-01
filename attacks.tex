@@ -19,9 +19,6 @@ the attacks and maximize their performance. We describe some of the issues encou
 
 \subsubsection{Flushing a cache line}
 
-% TODO: what is the arm instruction for clflush
-% TODO: put in probability of evicting a relevant line?
-
 One feature of the popular x86 and ARM ISAs is the availability of cache manipulation instructions
 (for example x86 has {\tt clflush} to flush a cache line from every level of the cache hierarchy).
 However, RISC-V does not have a corresponding {\tt clflush} equivalent.
@@ -52,7 +49,9 @@ the NLP contains the Return Stack Buffer (RSB) which holds the return pointer fo
 consists of a large predictor such as a TAGE or GShare predictor which makes a more accurate prediction based on
 a larger view of the branch history \cite{b47}. For simplicity, the team decided to use a GShare predictor, since it is 
 easier to train and was fully functioning at the start of the project (the TAGE BP had multiple performance bugs
-associated with it). The GShare predictor used had a global history of 23 bits and history table containing 4096 counters. Since the global history was longer than the size of the table, the global history was hashed with the instruction PC and folded to index into the history table. Additionally, when trying to
+associated with it). The GShare predictor used had a global history of 23 bits and history table containing 4096 
+counters. Since the global history was longer than the size of the table, the global history was hashed with the 
+instruction PC and folded to index into the history table. Additionally, when trying to
 implement the RSB attack, it was discovered that the RSB was disabled resulting in all {\tt ret} instructions
 to speculate to the next PC instead of the return target PC. Re-enabling the RSB lead to multiple other BPU bugs,
 so the team decided to keep the RSB disabled and instead implement the Branch Target Injection attack which did not
@@ -63,7 +62,7 @@ use the RSB.
 % TODO: does this make sense to people
 
 BOOM's memory system utilizes the RocketChip L1 Data Cache and connects to the rest of the RocketChip
-uncore. However, in the configuration of BOOM used, there is a L1 cache and outer memory set to a L2 cache
+uncore \cite{b54}. However, in the configuration of BOOM used, there is a L1 cache and outer memory set to a L2 cache
 latency. This memory hierarchy still functions properly, however it was noticed that the speculation window
 was not large enough due to the memory model mandating that the latency to any memory request would be no greater than latency to L2.
 While a real attack would use L2 or L3 cache misses to expand the speculation window, we instead approximated this with a {\tt fdiv} dependency chain.
