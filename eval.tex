@@ -142,8 +142,8 @@ want(t) =?= 1.(t) 2.(^A)
 
 Overall, the attacks chosen were replicated successfully on the BOOM microarchitecture. A printout
 demonstrating leakage of secret information with the Bounds Check Bypass attack
-is shown in \ref{code:spec-attack-printout}. Initial results of the replications
-are promising with around 3.6KB/s for both attacks. \ref{tab:spec-attack-results}
+is shown in Code \ref{code:spec-attack-printout}. Initial results of the replications
+are promising with around 3.6KB/s for both attacks. Table \ref{tab:spec-attack-results}
 shows the results of the two attacks. These measurements take into account the clearing
 of the tally array before each run, the multiple rounds of training for the BPU,
 the single attack run on the victim, and the time to measure out the secret from the attacker array.
@@ -182,7 +182,7 @@ both the index and the address for accessing the function and passing the input.
 
 We evaluated our SpecBuf implementation using three small microbenchmarks, Dhrystone and the 
 replicated attacks. The SpecBuf shows a small increase in performance in initial tests while providing
-a defense against the replicated attacks demonstrated. A table of results is shown at \ref{tab:spec-buf-results}.
+a defense against the replicated attacks demonstrated. A table of results is shown at Table \ref{tab:spec-buf-results}.
 
 \subsubsection{Microbenchmark Explanations and Results}
 
@@ -211,7 +211,7 @@ flow was speculated to be correct, then any following loads that have the same s
 This microbenchmark shows this performance hit on the first load that occurs after this case.
 
 \subsubsection{Dhrystone Results}
-Enabling the SpecBuf granted a 2\% increase in Dhrystone performance, seen below in \ref{tab:spec-buf-results}. There are several factors which may contribute to this small performance gain. The SpecBuf delays the eviction of old cachelines until the refill is known to commit, allowing hits on the old cacheline in the intervening cycles. Additionally, the SpecBuf decreases the latency of missed loads: this is because refill requests can be sent to the bus earlier, and the retured data can be forwarded out of the buffer as soon as it is available, rather than waiting for the update of cache metadata.
+Enabling the SpecBuf granted a 2\% increase in Dhrystone performance, seen below in Table \ref{tab:spec-buf-results}. There are several factors which may contribute to this small performance gain. The SpecBuf delays the eviction of old cachelines until the refill is known to commit, allowing hits on the old cacheline in the intervening cycles. Additionally, the SpecBuf decreases the latency of missed loads: this is because refill requests can be sent to the bus earlier, and the retured data can be forwarded out of the buffer as soon as it is available, rather than waiting for the update of cache metadata.
 
 \begin{table}
 \centering

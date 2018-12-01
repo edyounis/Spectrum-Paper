@@ -9,12 +9,11 @@
     features. In this paper, we present three results to advance research on
     secure hardware mitigations for these threats; a taxonomy for speculative style
     attacks and defenses, replication of speculative attacks on an open-source processor,
-    and a hardware implementation of a speculative buffer cache that mitigates
+    and a hardware implementation of a speculative buffer that mitigates
     basic speculative cache attacks.
     
-    We have categorized the variety of attacks based on if the attacks are 
-    architecturally legal and the defenses based on their types. Additionally, 
-    we have mapped mitigations to the attacks they potentially cover.
+    We have categorized the variety of attacks and defenses based on several attributes.
+    Additionally, we have mapped mitigations to the attacks that they potentially cover.
     Using the Berkeley Out-Of-Order Machine (BOOM), we have 
     re-implemented Spectre Variants 1 and 2 that target the L1 Data Cache. We 
     achieve a leakage rate of around 114 bytes per second with a 100 MHz processor 
@@ -23,8 +22,8 @@
     data will be transfered to the L1. Based on preliminary results, it achieves 
     a 2216 Dhrystones per second score on the Dhrystone benchmark
     resulting in a 2\% performance increase compared to the
-    baseline. Additionally, trial synthesis on a 45nm process shows a 2.5\% area
+    baseline. Additionally, trial synthesis on a 45nm process shows only a 2.5\% area
     increase and 0.36\% clock reduction. To our knowledge, these replications and 
-    SpecBuf implementation is the first demonstration of a speculative style attack
+    SpecBuf implementation are respectively the first demonstration of a speculative style attack
     on BOOM and the first synthesizable RTL implementation of a speculative buffer.
 \end{abstract}
