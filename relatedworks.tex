@@ -38,7 +38,38 @@ does not solve the source of the attack since it is specific to x86 architecture
 
 \subsection{Speculation Defenses}
 \subsubsection{InvisiSpec \cite{b46}}
+
+InvisiSpec is a theoretical implementation of a speculative buffer on a multi-core
+processor. This buffer is designed close to the processor and holds all unsafe speculative loads.
+Assuming infinite area and energy, this is implemented by extending the Load Queue (LQ).
+InvisiSpec's major point is that its buffer is invisible to memory hierarchy, and as a result,
+invisible to the cache coherence protocol. This implies that the hardware must track cache
+coherence requests that effect speculated loads and apply them correctly and safely. This is
+done with an exposure scheme that enforces memory consistency and cache coherence protocols.
+InvisiSpec achieves a 72\% slowdown when simulating with Gem5. Our implementation only
+considers a single-core processor scoping out the cache coherence protocol. However, we consider
+a multi-core processor, no change would be needed to the cache coherence because we treat the
+speculative data as part of the state of the cache. Additionally, by extended the Miss
+Status Holding Registers (MSHR) instead of the LQ we achieve practical results in terms
+of physical area and energy.
+
 \subsubsection{SafeSpec \cite{b29}}
+
+SafeSpec is another theoretical implementation of a speculative buffer on an x86 processor.
+Unlike InvisiSpec and our work, SafeSpec considers adding speculative buffers to the TLB and 
+i-cache as well as the d-cache. This results in significant control flow changes.
+Like InvisiSpec, SafeSpec is not practically concerned with physical limitations.
+Their simulated CPU has an 26.4\% power and 17\% area overhead in the worst case. One
+important contribution of SafeSpec is the paper's discussion on side-channels using the speculative
+buffer. In essence, it is a few orders of magnitude more difficult and inefficient to perform
+these side-channels. We are only concerned with protecting the data-cache from side-channels, as
+there are many modules on the processor already that present other possible side-channels.[cite needed?]
 
 \subsection{Other Classifications}
 \subsubsection{A systematic Evaluation of Transient Execution Attacks and Defenses \cite{b48}}
+
+This work proposes a systematic classifications for speculative attacks. While categorizing
+the attacks, the authors also systematically discovered a few variants of these types of attacks.
+This paper focuses on the effectiveness of attacks and defenses on different CPU vendors, where as,
+we stay agnostic to the CPU manufacturer. Additionally, this paper does a in-depth analysis of Spectre-type
+mitigations, but has a very short evaluation of meltdown defenses.
