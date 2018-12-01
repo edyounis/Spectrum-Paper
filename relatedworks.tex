@@ -1,39 +1,41 @@
-\section{Related Works}
+\section{Related Works} \label{Related Works}
 
 \subsection{Speculative Style Attacks}
 
 \subsubsection{Spectre}
 
-This work first described a speculative style attack on out-of-order cores that 
-allows a malicious user to read secret data from a victim \cite{b1}. When an out-of-order 
-processor reaches a control flow instruction, it uses the Branch Target Buffer in 
-conjunction with the Branch Predictor to make an educated guess on the direction
-of program flow. If the control flow is mispredicted then the code that was
-executed will not be committed into the architectural state. However, the
-speculated instruction can changed the microarchitectural state causing data
-leakages. This work introduced two main variants that leak secret data through
-a cache side channel attack. The first variant named the Bounds Check Bypass
+This work first described speculative style attacks on out-of-order cores that 
+allow a malicious user to read secret data from a victim \cite{b1}. When an out-of-order 
+processor reaches a control flow instruction, it predicts the direction of program flow
+using the Branch Target Buffer and Branch Predictor.
+If the control flow is mispredicted, then the code that was
+executed will not be committed into the architectural state. However, data leakages can 
+occur due to the speculated instruction changing the microarchitectural state.
+This work introduced two main variants that leak secret data through
+a cache side channel attack. The first variant named Bounds Check Bypass
 trains the Branch Predictor to ignore a bounds check and retrieve secret data. The
 second variant uses the Branch Target Buffer to determine which target to execute
-called a gadget. Although both attacks are simple exploits of speculative execution,
-this attack affects all types of out-of-order speculative microarchitectures 
-and requires significant changes to the microarchitecture and software stack to solve.
-Our work serves as an extension of this work by categorizing, replicating, and mitigating
+called a gadget. Both attacks exploit speculative execution and thus
+affect all types of out-of-order speculative microarchitectures.
+Therefore, significant changes to the microarchitecture and software stack will have
+to occur to mitigate these attacks.
+Our work serves as an extension of this result by categorizing, replicating, and mitigating
 speculative cache side channel attacks on an open source out-of-order microarchitecture.
 
 \subsubsection{Meltdown}
 
-This work describes another form of speculative attack attack where an attacker 
-can bypass privilege levels and read all the data from kernel memory \cite{b2}. Exploiting a 
-similar mechanism to Spectre, this attack uses speculated code run after memory access
-protection exception to leak kernel memory to the attacker. When the memory access
-is run, then the privilege check occurs in parallel with retrieving the data. Thus,
-for this attack to work, the data is retrieved and is used to modify the 
-microarchitectural state before instruction causes an exception. This type of attack
+This work describes another speculative attack where an attacker 
+can bypass privilege levels and read all the data from kernel memory \cite{b2}.
+This attack uses speculated code run after a memory access
+protection exception to leak kernel memory to the attacker. When a kernel memory 
+location is accessed in a lower privilege level, then the privilege check occurs
+in parallel with retrieving the data. Thus, when this data is retrieved, the following
+instructions can be speculatively executed, leaking the information through a side
+channel. This type of attack
 is more dangerous than Spectre in that it leaks kernel memory (and physical memory if
 it is mapped in the kernel), however, it is easier to mitigate through mechanisms such
 as KAISER \cite{b53} which unmaps the physical memory from the kernel preventing the attack.
-Our work for this paper, addresses the leakage mechanism of this particular attack but 
+Our work for this paper addresses the leakage mechanism of this particular attack but 
 does not solve the source of the attack since it is specific to x86 architectures.
 
 \subsection{Speculation Defenses}
@@ -41,37 +43,33 @@ does not solve the source of the attack since it is specific to x86 architecture
 \subsubsection{InvisiSpec}
 
 InvisiSpec is a theoretical implementation of a speculative buffer on a multi-core
-processor \cite{b46}. This buffer is designed close to the processor and holds all unsafe speculative loads.
-Assuming infinite area and energy, this is implemented by extending the Load Queue (LQ).
-InvisiSpec's major point is that its buffer is invisible to memory hierarchy, and as a result,
+processor \cite{b46}. This buffer is designed to extend the Load Queue (LQ) and hold all unsafe speculative loads.
+Since InvisiSpec's buffer is invisible to the memory hierarchy, the buffer is
 invisible to the cache coherence protocol. This implies that the hardware must track cache
 coherence requests that effect speculated loads and apply them correctly and safely. This is
 done with an exposure scheme that enforces memory consistency and cache coherence protocols.
-InvisiSpec achieves a 72\% slowdown when simulating with Gem5. Our implementation only
-considers a single-core processor scoping out the cache coherence protocol. However, we consider
-a multi-core processor, no change would be needed to the cache coherence because we treat the
-speculative data as part of the state of the cache. Additionally, by extended the Miss
-Status Holding Registers (MSHR) instead of the LQ we achieve practical results in terms
-of physical area and energy.
+InvisiSpec achieves a 72\% slowdown during software simulation. Our implementation differs by only
+considering a single-core processor which allows us to ignore cache coherence. Additionally, we extended the Miss
+Status Holding Registers (MSHRs) instead of the LQ to achieve practical and synthesizable results
+rather than InvisiSpec's buffer that assumes infinite area and size.
 
 \subsubsection{SafeSpec}
 
 SafeSpec is another theoretical implementation of a speculative buffer on an x86 processor \cite{b29}.
-Unlike InvisiSpec and our work, SafeSpec considers adding speculative buffers to the TLB and 
-i-cache as well as the d-cache. This results in significant control flow changes.
-Like InvisiSpec, SafeSpec is not practically concerned with physical limitations.
-Their simulated CPU has an 26.4\% power and 17\% area overhead in the worst case. One
-important contribution of SafeSpec is the paper's discussion on side-channels using the speculative
-buffer. In essence, it is a few orders of magnitude more difficult and inefficient to perform
-these side-channels. We are only concerned with protecting the data-cache from side-channels, as
-there are many modules on the processor already that present other possible side-channels.[cite needed?]
+Unlike InvisiSpec and our work, SafeSpec considers adding speculative buffers to the Translation Lookaside Buffer and 
+L1 caches which results in significant control flow changes.
+Simulated CPU results show an 26.4\% power and 17\% area overhead in the worst case. One
+important contribution of SafeSpec is the paper's discussion on side channels using the speculative
+buffer. With the buffer, the side channels are a few orders of magnitude more difficult and inefficient to perform.
+We differ from this work by creating a working implementation of a speculative buffer that protects the data cache.
 
 \subsection{Other Classifications}
 
 \subsubsection{A systematic Evaluation of Transient Execution Attacks and Defenses}
 
-This work proposes a systematic classifications for speculative attacks \cite{b48}. While categorizing
-the attacks, the authors also systematically discovered a few variants of these types of attacks.
-This paper focuses on the effectiveness of attacks and defenses on different CPU vendors, where as,
-we stay agnostic to the CPU manufacturer. Additionally, this paper does a in-depth analysis of Spectre-type
-mitigations, but has a very short evaluation of meltdown defenses.
+This work proposes a systematic classification for speculative attacks \cite{b48}. While categorizing
+the attacks, the authors also discovered other speculative attack variants.
+Additionally, this paper does a in-depth analysis of Spectre-type
+mitigations, but has a very short evaluation of Meltdown defenses.
+Our taxonomy differs from this work by mainly focusing on a vendor agnostic solution to speculative side channel
+attacks.

@@ -1,4 +1,4 @@
-\section{Evaluations}
+\section{Evaluations} \label{Evaluations}
 
 \begin{table}
 \centering
@@ -52,12 +52,12 @@
 \begin{tabular}{@{} *4l @{}} \toprule
     & \multicolumn{2}{l}{Version of BOOM} & \\
     Benchmark                           & Normal & SpecBuf & \% Diff.\\ \midrule
-    Non-spec. load misses   & 540 cycles & 640 cycles & +19\%    \\
+    Non-spec. LD misses   & 540 cycles & 640 cycles & +19\%    \\
     to same sets            &            &            & \\ \midrule
-    Non-spec. load misses   & 264 cycles & 297 cycles & -11\%    \\ 
+    Non-spec. LD misses   & 264 cycles & 297 cycles & -11\%    \\ 
     to diff. sets           &            &            & \\ \midrule
-    MSHR evicted speculative & 48 cycles & 67 cycles & -40\%    \\
-    load miss                &            &            & \\ \midrule
+    MSHR evicted spec. & 48 cycles & 67 cycles & -40\%    \\
+    LD miss                &            &            & \\ \midrule
     Dhrystone                           & 2176 Dhrystones/s & 2216 Dhrystones/s & +2\%\\ \bottomrule
 \end{tabular}
 \end{table}
