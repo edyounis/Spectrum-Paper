@@ -44,9 +44,11 @@ and compare the tradeoffs of each implementation.
 \subsection{BOOM Improvements}
 
 Future work for the project also involves bringing BOOM to a more stable version. Throughout
-the project, many performance-reducing bugs were found both in the front-end and the 
-load/store unit. Resolving these bugs would not only improve the performance our replicated attacks,
+the project, many performance-reducing bugs were found both in the front-end.
+Additionally, the LSU unit does not currently support the updated RISC-V WMO memory model.
+Resolving these issues would not only improve the performance our replicated attacks,
 it would also further validate BOOM as a platform for secure hardware research.
+Beyond the above, we have additionally identified several broad areas for future BOOM improvements.
 
 \subsubsection{Multi-ported Cache}
 
@@ -55,12 +57,12 @@ is not ideal for a high performance out-of-order core. The cache does not have a
 speculative execution, and contains many structures and provisions which are superfluous in an
 out-of-order core. Some of the L1 structures, like the replay queues and store data queues, would be
 better handled within the core's load/store unit itself.
-Additionally, the cache is strictly single ported. In order to investigate high performance variants
+Additionally, the cache is strictly single ported. In order to investigate higher performance variants
 of the BOOM core, a multi-ported data cache will be required.
 
 \subsubsection{SpecBuf Improvements}
 
-Our current SpecBuf implementation has several limitations, mentioned in Section \ref{Speculation Buffer}.
+Our current SpecBuf implementation has several limitations, described in Section \ref{specbuf_sidechannel}.
 Among them are the lack of full-associativity and the inability to immediately deallocate killed MSHRs.
 To improve further upon our initial design, we may want to rearchitect BOOM's data cache from
 the ground up with speculative safety in mind.
