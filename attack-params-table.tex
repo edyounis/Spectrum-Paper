@@ -1,0 +1,16 @@
+\documentclass{standalone}
+\usepackage{booktabs}
+
+\begin{document}
+
+\centering
+\begin{tabular}{@{} *2l @{}} \toprule
+    Parameter                    & Value \\ \midrule
+    Cache Hit Threshold          & 50 cycles \\
+    Amount of runs on same byte  & 10 rounds \\
+    Training rounds for BPU      & 6 training rounds \\
+    Cache flush hits on same set & 4 * L1\_WAYS \\
+    GShare Counter Table Entries & 4096 \\ \bottomrule
+\end{tabular}
+
+\end{document}

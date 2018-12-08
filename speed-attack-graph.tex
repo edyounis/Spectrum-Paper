@@ -1,0 +1,94 @@
+\documentclass{standalone}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{algorithmic}
+\usepackage{graphicx}
+\usepackage{textcomp}
+\usepackage{xcolor}
+\usepackage{booktabs}
+\usepackage{listings}
+\usepackage{pgfplots}
+\usepackage{afterpage}
+\usepackage{hyperref}
+
+\begin{document}
+
+\begin{tikzpicture}
+    \begin{axis}[
+        ylabel={Cycles},
+        xlabel={Secret Byte Read In},
+        xmin=0, xmax=25,
+        ymin=860000, ymax=940000,
+        legend pos=north east,
+        ymajorgrids=true,
+        grid style=dashed
+    ]
+        \addplot[
+            color=blue,
+            mark=square,
+        ]
+        coordinates {
+            (0 ,934580)
+            (1 ,884322)
+            (2 ,884387)
+            (3 ,881845)
+            (4 ,880847)
+            (5 ,882446)
+            (6 ,884498)
+            (7 ,880939)
+            (8 ,882241)
+            (9 ,882006)
+            (10,880994)
+            (11,881965)
+            (12,882634)
+            (13,882954)
+            (14,882156)
+            (15,883738)
+            (16,884212)
+            (17,881912)
+            (18,882980)
+            (19,883142)
+            (20,882600)
+            (21,882739)
+            (22,882989)
+            (23,879563)
+            (24,880698)
+            (25,883218)
+        };
+                
+        \addplot[
+            color=green,
+            mark=triangle,
+        ]
+        coordinates {
+            (0 ,925862)
+            (1 ,874188)
+            (2 ,874815)
+            (3 ,873968)
+            (4 ,874626)
+            (5 ,874778)
+            (6 ,873466)
+            (7 ,876281)
+            (8 ,874361)
+            (9 ,874297)
+            (10,876153)
+            (11,875000)
+            (12,875435)
+            (13,873015)
+            (14,877303)
+            (15,874572)
+            (16,872902)
+            (17,875761)
+            (18,874966)
+            (19,874715)
+            (20,872514)
+            (21,872346)
+            (22,875481)
+            (23,875161)
+            (24,874325)
+            (25,875371)
+        };
+        \legend{Bounds Check Bypass,Branch Target Injection}
+    \end{axis}
+\end{tikzpicture}
+
+\end{document}
