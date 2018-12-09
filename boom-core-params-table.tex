@@ -1,0 +1,23 @@
+\documentclass{standalone}
+\usepackage{booktabs}
+
+\begin{document}
+
+\begin{tabular}{@{} *2l @{}} \toprule
+    Parameter                    & Value \\ \midrule
+    Fetch Width                  & 2 \\
+    Decode Width                 & 2 \\
+    Issue Width                  & 4 \\
+    PRF Size                     & 100 \\
+    ROB Size                     & 100 \\ \midrule
+    L1 Sets                      & 64 \\
+    L1 Ways                      & 8 \\
+    L1 Linesize                  & 64 bytes \\ \midrule
+    BTB Sets                     & 512 \\
+    BTB Banks                    & 2 \\
+    BTB Ways                     & 4 \\ \midrule
+    GShare History Bits          & 23 \\
+    GShare Counter Table Entries & 4096 \\ \bottomrule
+\end{tabular}
+
+\end{document}

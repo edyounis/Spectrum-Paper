@@ -1,0 +1,94 @@
+\documentclass{standalone}
+\usepackage{cite}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{algorithmic}
+\usepackage{graphicx}
+\usepackage{textcomp}
+\usepackage{xcolor}
+\usepackage{booktabs}
+\usepackage{pgfplots}
+\usepackage{afterpage}
+\usepackage{listings}
+\lstdefinestyle{column-code}{
+    language=C++,                                     % choose the language of the code
+    basicstyle=\scriptsize\ttfamily,basewidth=0.75em, % the size of the fonts that are used for the code
+    numbers=left,                   % where to put the line-numbers
+    numberstyle=\scriptsize,        % the size of the fonts that are used for the line-numbers
+    stepnumber=1,                   % the step between two line-numbers. If it is 1 each line will be numbered
+    numbersep=5pt,                  % how far the line-numbers are from the code
+    backgroundcolor=\color{white},  % choose the background color. You must add \usepackage{color}
+    showspaces=false,               % show spaces adding particular underscores
+    showstringspaces=false,         % underline spaces within strings
+    showtabs=false,                 % show tabs within strings adding particular underscores
+    frame=single,                   % adds a frame around the code
+    tabsize=2,                      % sets default tabsize to 3 spaces
+    captionpos=b,                   % sets the caption-position to bottom
+    breaklines=true,                % sets automatic line breaking
+    breakatwhitespace=false,        % sets if automatic breaks should only happen at whitespace
+    linewidth=\columnwidth,
+    boxpos=b,
+    xleftmargin=2em,
+    framexleftmargin=1.5em,
+    %escapeinside={\%
+    %}
+    %{
+    %)}          % if you want to add a comment within your code
+} \renewcommand{\lstlistingname}{Code}
+
+\lstdefinestyle{full-code}{
+    language=C++,                                     % choose the language of the code
+    basicstyle=\scriptsize\ttfamily,basewidth=0.75em, % the size of the fonts that are used for the code
+    numbers=left,                   % where to put the line-numbers
+    numberstyle=\scriptsize,        % the size of the fonts that are used for the line-numbers
+    stepnumber=1,                   % the step between two line-numbers. If it is 1 each line will be numbered
+    numbersep=5pt,                  % how far the line-numbers are from the code
+    backgroundcolor=\color{white},  % choose the background color. You must add \usepackage{color}
+    showspaces=false,               % show spaces adding particular underscores
+    showstringspaces=false,         % underline spaces within strings
+    showtabs=false,                 % show tabs within strings adding particular underscores
+    frame=single,                   % adds a frame around the code
+    tabsize=2,                      % sets default tabsize to 3 spaces
+    captionpos=b,                   % sets the caption-position to bottom
+    breaklines=true,                % sets automatic line breaking
+    breakatwhitespace=false,        % sets if automatic breaks should only happen at whitespace
+    linewidth=\textwidth,
+    boxpos=b,
+    xleftmargin=2em,
+    framexleftmargin=2em,
+    %escapeinside={\%
+    %}
+    %{
+    %)}          % if you want to add a comment within your code
+} \renewcommand{\lstlistingname}{Code}
+
+
+\begin{document}
+
+\begin{lstlisting}[style=column-code]
+want(#) =?= 1.(#) 2.( C)
+want(T) =?= 1.(T) 2.(^A)
+want(h) =?= 1.(h) 2.(i)
+want(i) =?= 1.(i) 2.(>)
+want(s) =?= 1.(s) 2.(^D)
+want(I) =?= 1.(I) 2.(^D)
+want(s) =?= 1.(s) 2.( ^L)
+want(T) =?= 1.(T) 2.( )
+want(h) =?= 1.(h) 2.(^F)
+want(e) =?= 1.(e) 2.()
+want(B) =?= 1.(B) 2.(<9f>)
+want(a) =?= 1.(a) 2.(^B)
+want(b) =?= 1.(b) 2.(^A)
+want(y) =?= 1.(y) 2.()
+want(B) =?= 1.(B) 2.( )
+want(o) =?= 1.(o) 2.(^H)
+want(o) =?= 1.(o) 2.(4)
+want(m) =?= 1.(m) 2.(k)
+want(e) =?= 1.(e) 2.(^C)
+want(r) =?= 1.(r) 2.(^A)
+want(T) =?= 1.(T) 2.(^C)
+want(e) =?= 1.(e) 2.(^O)
+want(s) =?= 1.(s) 2.(^D)
+want(t) =?= 1.(t) 2.(^A)
+\end{lstlisting}
+
+\end{document}

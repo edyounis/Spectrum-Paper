@@ -1,0 +1,23 @@
+\documentclass{standalone}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{algorithmic}
+\usepackage{graphicx}
+\usepackage{textcomp}
+\usepackage{xcolor}
+\usepackage{booktabs}
+\usepackage{listings}
+\usepackage{pgfplots}
+\usepackage{afterpage}
+\usepackage{hyperref}
+
+\begin{document}
+
+\centering
+\begin{tabular}{@{} *4l @{}} \toprule
+    &                        & \multicolumn{2}{l}{Bytes per Second} \\
+    Attack                  & Cycles for Secret Byte &           100 MHz &   3.2 GHz \\ \midrule
+    Bounds Check Bypass     &                ~884485 &          ~113 B/s & ~3618 B/s \\
+    Branch Target Injection &                ~876602 &          ~114 B/s & ~3650 B/s \\ \bottomrule
+\end{tabular}
+
+\end{document}

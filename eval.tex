@@ -180,7 +180,9 @@ both the index and the address for accessing the function and passing the input.
 \subsection{SpecBuf Results}
 
 We evaluated our SpecBuf implementation using three small microbenchmarks, Dhrystone and the 
-replicated attacks. The SpecBuf shows a small increase in performance in initial tests while providing
+replicated attacks. The microbenchmarks created stress the MSHR blocking and eviction conditions
+that slow down the machine while Dhrystone was chosen as an initial general test. The SpecBuf shows an expected small decrease
+in performance in the microbenchmark tests while Dhrystone shows a small improvement all while providing
 a defense against the replicated attacks demonstrated. A table of results is shown at Table \ref{tab:spec-buf-results}.
 
 \subsubsection{Microbenchmark Explanations and Results}
@@ -230,6 +232,7 @@ Enabling the SpecBuf granted a 2\% increase in Dhrystone performance, seen below
 \end{table}
 
 \subsubsection{Synthesis Results} \label{Synthesis Results}
-Trial synthesis of BOOM with our SpecBuf in a 45nm technology resulted in a 2.5\% increase in area and a 0.36\% decrease in clock frequency.
+Trial synthesis of BOOM with our SpecBuf in a 45nm technology resulted in a 2.5\% increase in area and a 0.36\% decrease in clock frequency using HAMMER, a framework to
+abstract synthesis and place-and-route \cite{hammer}.
 
 
