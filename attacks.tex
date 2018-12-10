@@ -6,7 +6,8 @@ subset of speculative style attacks. Originally, the goal was to implement both
 Spectre-v1, otherwise know as the Bounds Check Bypass attack, and the Return Stack Buffer attack \cite{b3}.
 However, due to the instability of BOOM's high-performance branch predictors, the team instead implemented
 proof of concepts for Bounds Check Bypass attack and Spectre-v2, otherwise known as the
-Branch Target Injection attack. The source code for these replicated attacks is available at
+Branch Target Injection attack. Over 520 lines of C code were written for both implemented attacks as well as 
+code for the untested Return Stack Buffer attack. The source code for these replicated attacks is available at
 \url{https://github.com/riscv-boom/boom-attacks}.
 
 \subsection{Implementation Details}
