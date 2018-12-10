@@ -3,8 +3,8 @@
 \subsection{Base Core Parameters}
 
 The two attacks were replicated on the BOOM core with the parameters given
-in Table \ref{tab:boom-core-params}. All attacks were measured using FireSim, an open-source
-cycle-accurate, FPGA-accelerated scale-out computer system simulation platform \cite{b12}.
+in Table \ref{tab:boom-core-params}. Note that our configuration employs 4 MSHRs and thus contains a 4-entry SpecBuf.
+All attacks were measured using FireSim, an open-source cycle-accurate, FPGA-accelerated scale-out computer system simulation platform \cite{b12}.
 
 \begin{table}
 \centering \caption{BOOM Core Parameters} \label{tab:boom-core-params}
@@ -17,7 +17,8 @@ cycle-accurate, FPGA-accelerated scale-out computer system simulation platform \
     ROB Size                     & 100 \\ \midrule
     L1 Sets                      & 64 \\
     L1 Ways                      & 8 \\
-    L1 Linesize                  & 64 bytes \\ \midrule
+    L1 Linesize                  & 64 bytes \\
+    MSHR File Entries            & 4 \\ \midrule
     BTB Sets                     & 512 \\
     BTB Banks                    & 2 \\
     BTB Ways                     & 4 \\ \midrule
@@ -232,7 +233,7 @@ Enabling the SpecBuf granted a 2\% increase in Dhrystone performance, seen below
 \end{table}
 
 \subsubsection{Synthesis Results} \label{Synthesis Results}
-Trial synthesis of BOOM with our SpecBuf in a 45nm technology resulted in a 2.5\% increase in area and a 0.36\% decrease in clock frequency using HAMMER, a framework to
+Trial synthesis of BOOM with our 4-entry SpecBuf in a 45nm technology resulted in a 2.5\% increase in area and a 0.36\% decrease in clock frequency using HAMMER, a framework to
 abstract synthesis and place-and-route \cite{hammer}.
 
 
