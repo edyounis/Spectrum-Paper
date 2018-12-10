@@ -1,7 +1,7 @@
 project:=spectrum
 ext= tex
 
-all: imgs
+all:
 	pdflatex ${project}.$(ext)
 
 imgs: 

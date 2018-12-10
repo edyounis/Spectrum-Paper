@@ -34,19 +34,25 @@ TAGE predictor.
 
 We plan to perform a more thorough evaluation of the performance and security implications of the
 SpecBuf with more workloads, in addition to Dhrystone. At evaluation, the SpecBuf was unable to boot
-RISC-V Linux on FireSim and therefore we were unable to run the SPEC2017 suite \cite{b50}.
-Additionally, the SpecBuf was unable to run the CoreMark EEMBC benchmark suite due to bugs that
-occurred 5M cycles into the suite \cite{b51}. We plan to resolve these bugs and perform a more
-thorough evaluation of the SpecBuf. We also plan to configure multiple design
+RISC-V Linux on FireSim and therefore we were unable to run the SPEC2017 suite and the CoreMark EEMBC benchmark \cite{b50, b51}.
+Currently, RISC-V Linux runs for around 180M cycles before a pipeline assertion fires in FireSim simulation. However, 
+in VCS simulation, Linux runs for over 350M cycles. Further work needs to be done to see if the VCS simulation
+fully boots Linux as well as checking the difference between the VCS and FireSim simulations. After fixing the Linux boot, we
+plan to perform a more thorough evaluation of the SpecBuf. We plan to configure multiple design
 points of the SpecBuf with multiple implementations of the PNR head and refill/replay system,
 and compare the tradeoffs of each implementation.
 
 \subsection{BOOM Improvements}
 
 Future work for the project also involves bringing BOOM to a more stable version. Throughout
-the project, many performance-reducing bugs were found both in the front-end.
+the project, many performance-reducing bugs were found in the front-end. Work done after
+evaluation has resulted in the RSB being reconnected, fixes to GShare Branch History
+Table counters and Branch History Register hashing to allow for better predictions.
+The changes improve the branch prediction of both baseline and the SpecBuf version of the core resulting in
+higher Dhrystone scores (the SpecBuf version shows a 26\% improvement in Dhrystone results). 
+However, there are still more front-end bugs that can be addressed for further improvements.
 Additionally, the LSU unit does not currently support the updated RISC-V WMO memory model.
-Resolving these issues would not only improve the performance our replicated attacks,
+Resolving these issues would not only improve the performance of our replicated attacks,
 it would also further validate BOOM as a platform for secure hardware research.
 Beyond the above, we have additionally identified several broad areas for future BOOM improvements.
 
