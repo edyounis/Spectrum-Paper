@@ -180,7 +180,7 @@ want(t) =?= 1.(t) 2.(^A)
 \end{tabular}
 \end{table}
 
-\subsection{SpecBuf Results}
+\subsection{SpecBuf Results} \label{SpecBuf Results}
 
 We evaluated our SpecBuf implementation using three small microbenchmarks, Dhrystone and the 
 replicated attacks. The microbenchmarks created stress the MSHR blocking and eviction conditions
@@ -198,21 +198,22 @@ before the cache. This causes a small performance decrease for each load. Since 
 {\tt 16 loads * (CACHE\_LINE\_SZ / DATABUS\_WIDTH)} or {\tt 16 * (64B / 8B) = 128 cycles}.
 
 The second microbenchmark named "Non-speculative load misses to different sets" is similar to the first except that each subsequent
-load is accessing a different set in the cache. In the normal version of BOOM, the MSHR's would fill up completely but then stall 
+load is accessing a different set in the cache. In the normal version of BOOM, the MSHRs would fill up completely but then stall 
 when full until a prior MSHR entry would be freed (when a previous load is completed). When using the SpecBuf, there is a
 higher performance penalty because the data must fill the MSHR buffer with the cache data before filling the cache. Thus, there 
 is a extra overhead of around 8 cycles for every 4 loads since the MSHR's are allocated waves of 4 and the fill latency to the MSHR
 buffer is {\tt CACHE\_LINE\_SZ / DATABUS\_WIDTH} or {\tt 64B / 8B = 8 cycles}.
 
-The final microbenchmark named "MSHR evicted speculative load miss" is used to test the impact when a load has to be evicted from the 
-MSHR due to a potential deadlock condition. In the normal version of BOOM, if a speculative load is issued to the 
+The final microbenchmark named "MSHR evicted speculative load miss" is used to test the impact when a load has to be evicted from an 
+MSHR due to a potential deadlock condition. For instance, consider two loads which miss to different addresses that map to the same cache index, keeping in mind the limitation discussed in Section \ref{Fully Associative MSHR File}. In the normal version of BOOM, if one of these loads is speculatively issued to an 
 MSHR before a critical load that resolves the speculation, the speculative load will complete and
-write it's data to the cache. This will release the MSHR entry it occupied and allow the critical load to complete resolving the speculation. 
-However, the SpecBuf case, the speculative load will fill the data in the MSHR buffer, bypass the data to the microarchitectural register, 
-then wait for speculation to finish to determine if the data will go into the cache. If the critical load that needs the MSHR is issued after the speculative load,
-then the speculative load is evicted from the data cache resulting the data from that MSHR entry not entering the data cache. If the 
-flow was speculated to be correct, then any following loads that have the same set and tag would miss in the cache causing a performance decrease.
-This microbenchmark shows this performance hit on the first load that occurs after this case.
+write its data to the cache. This will release the MSHR entry it occupied and allow the critical load to complete, resolving the speculation. 
+However, with SpecBuf enabled, the speculative load will fill the data in the MSHR buffer, bypass the data to the microarchitectural register, 
+then wait for speculation to finish to determine if the data will enter the cache. If the critical load that needs the MSHR is issued after the speculative load,
+then the speculative load is evicted from the MSHR file. If the 
+flow proved to be speculated correctly, then any following loads to the same cache line would miss, causing a performance decrease.
+This microbenchmark shows the increased latency of a load to the evicted cacheline following this scenario.
+Note that a similar scenario can arise when the MSHR file is filled by many speculative loads, in which case one of the speculative loads would be randomly selected for eviction.
 
 \subsubsection{Dhrystone Results}
 Enabling the SpecBuf granted a 2\% increase in Dhrystone performance, seen below in Table \ref{tab:spec-buf-results}. There are several factors which may contribute to this small performance gain. The SpecBuf delays the eviction of old cachelines until the refill is known to commit, allowing hits on the old cacheline in the intervening cycles. Additionally, the SpecBuf decreases the latency of missed loads: this is because refill requests can be sent to the bus earlier, and the retured data can be forwarded out of the buffer as soon as it is available, rather than waiting for the update of cache metadata.
