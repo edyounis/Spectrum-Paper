@@ -208,11 +208,11 @@ The final microbenchmark named "MSHR evicted speculative load miss" is used to t
 MSHR due to a potential deadlock condition. In the normal version of BOOM, if a speculative load is issued to the 
 MSHR before a critical load that resolves the speculation, the speculative load will complete and
 write it's data to the cache. This will release the MSHR entry it occupied and allow the critical load to complete, resolving the speculation. 
-However, the SpecBuf case, the speculative load will fill the data in the MSHR buffer, bypass the data to the microarchitectural register, 
-then wait for speculation to finish to determine if the data will go into the cache. If the critical load that needs the MSHR is issued after the speculative load,
+However, with SpecBuf enabled, the speculative load will fill the data in the MSHR buffer, bypass the data to the microarchitectural register, 
+then wait for speculation to finish to determine if the data will enter the cache. If the critical load that needs the MSHR is issued after the speculative load,
 then the speculative load is evicted from the MSHR file. If the 
 flow proved to be speculated correctly, then any following loads to the same cache line would miss, causing a performance decrease.
-This microbenchmark shows this performance hit on the first load that occurs after this case.
+This microbenchmark shows the increased latency of a load to the evicted cacheline following this scenario.
 
 \subsubsection{Dhrystone Results}
 Enabling the SpecBuf granted a 2\% increase in Dhrystone performance, seen below in Table \ref{tab:spec-buf-results}. There are several factors which may contribute to this small performance gain. The SpecBuf delays the eviction of old cachelines until the refill is known to commit, allowing hits on the old cacheline in the intervening cycles. Additionally, the SpecBuf decreases the latency of missed loads: this is because refill requests can be sent to the bus earlier, and the retured data can be forwarded out of the buffer as soon as it is available, rather than waiting for the update of cache metadata.

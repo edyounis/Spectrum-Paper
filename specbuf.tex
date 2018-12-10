@@ -10,7 +10,7 @@ Similar to how architectural register state is managed in the execution pipeline
 A proposed approach is to hold speculated load data in an ``L0 Speculation buffer'' that can be flushed when misspeculation is detected.
 This prevents misspeculated loads from affecting the state of the cache, while still allowing correctly speculated loads to broadcast their data into the rest of the machine as soon as possible, maintaining performance. If well implemented, such a buffer could slightly improve performance by deferring the eviction of prior contents, slightly reducing the miss latency, and could even be combined with a store coalescing buffer - another useful ``L0 buffer'' structure.
 
-\subsection{Boom's Data Cache}
+\subsection{BOOM's Data Cache}
 BOOM is currently configured with RocketChip's non-blocking L1 cache \cite{b54}. This cache is single-ported and intended for use with the in-order Rocket core: a consequence is that the cache lacks the concept of speculation. BOOM's pipeline expects the ability to kill any misspeculated operations the cycle after misspeculation is detected. Therefore a data cache ``shim'' structure is used to track operations inside the datacache, killing them upon completion if they were found to be misspeculated. To implement our speculaton buffer, we additionally needed to pass both per-request and global speculative metadata into the cache.
 
 \subsection{Miss Status Holding Registers}
@@ -22,11 +22,9 @@ On misspeculation, the misspeculated MSHR entry is flushed along with any load d
 
 We allow the bypassing of refill data out of SpecBuf, before the data is committed. The consequence of this bypassing is that the service time for a cache miss is slightly reduced compared to the original behavior; data can be forwarded out prior to the updating of the cache data and tags. However, the total MSHR allocation time is longer than in the original behavior.
 
-Another subtlety of the MSHRs is the per-MSHR replay queues. These queues hold consecutive (secondary) load misses to the same cache line while the initial (primary) miss is being handled. Following the acquisition of the requested cache line, our SpecBuf will eagerly empty the replay queues until a store miss reaches the head. Since stores issued to the memory system are always non-speculative, the cache line can be immediately committed at this point.
+Another subtlety of the MSHRs is the per-MSHR replay queues. These queues hold consecutive (secondary) load misses to the same cache line while the initial (primary) miss is being handled. Following the acquisition of the requested cache line, our SpecBuf will eagerly empty the replay queues until a store miss reaches the head. Since stores issued to the memory system are always non-speculative, the cache line can be immediately committed at this point. A final subtlety is an MSHR eviction policy which prevents race conditions, discussed further in Section \ref{SpecBuf Results}.
 
-A final subtlety is the presence of an eviction policy which prevents race conditions. This is discussed further in Section Ref{SpecBuf Results}.
-
-Implementation of SpecBuf required changes to just under 500 lines of Chisel code. Of these, 300 lines resided directly in the data cache RTL.
+Implementation of SpecBuf required changes to nearly 500 lines of Chisel code, 300 of which resided in the data cache.
 
 \begin{figure}[h]
   \begin{center}\includegraphics[scale=0.17]{dcache.png}\end{center}
