@@ -25,8 +25,7 @@ speculative cache side channel attacks on an open source out-of-order microarchi
 \subsubsection{Meltdown}
 
 This work describes another speculative attack where an attacker 
-can bypass privilege levels and read all the data from kernel memory \cite{b2}.
-This attack uses speculated code run after a memory access
+can bypass privilege levels and read all the data from kernel memory \cite{b2}.  This attack uses speculated code run after a memory access
 protection exception to leak kernel memory to the attacker. When a kernel memory 
 location is accessed in a lower privilege level, then the privilege check occurs
 in parallel with retrieving the data. Thus, when this data is retrieved, the following
@@ -74,7 +73,7 @@ Our taxonomy differs from this work by mainly focusing on a vendor agnostic solu
 
 \subsubsection{Company Classifications}
 
-Spectre and Meltdown style attacks have been classified by multiple CPU manufacturers such as Intel, ARM, and AMD \cite{b54, b16, b53}.
+Spectre and Meltdown style attacks have been classified by multiple CPU manufacturers such as Intel, ARM, and AMD \cite{b55, b16, b53}.
 These company classifications only consider the attacks that effect their processors.
 Additionally, these recommend a solution which is known to work without consideration to scope.
 This leaves the analysis of the defenses limited in software.
