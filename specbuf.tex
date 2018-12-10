@@ -24,7 +24,7 @@ We allow bypassing refill data out of the SpecBuf, before the data is committed.
 
 Another subtlety of the MSHRs is the per-MSHR replay queues. These queues hold consecutive (secondary) load misses to the same cache line while the initial (primary) miss is being handled. Following the acquisition of the requested cache line, our SpecBuf will eagerly empty the replay queues until a store miss reaches the head. Since stores issued to the memory system are always non-speculative, the cache line can be immediately committed at this point.
 
-Implementation of SpecBuf required changes to just under 500 lines of code, of which 300 resided in the data cache RTL.
+Implementation of SpecBuf required changes to just under 500 lines of Chisel code, of which 300 resided in the data cache RTL.
 
 \begin{figure}[h]
   \begin{center}\includegraphics[scale=0.17]{dcache.png}\end{center}
