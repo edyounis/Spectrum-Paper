@@ -12,14 +12,6 @@ This becomes another split in attack tree.
 The Spectre style attacks that abuse an architecturally legal action all target different hardware modules.
 This forms the split for that branch of the tree.
 
-Defenses are similarly organized according to implementation location and cost.
-At the bottom of the stack we have the hardware mitigations, which are further divided into new modules or changed modules.
-Changed modules imply a change to the function of an existing hardware component, but a new module is an entirely new hardware idea.
-Firmware was seperated into it's own category because the implementation effort is drastically different than the implementation of hardware or software.
-At the top, software defenses are split only into two categories, OS and application level mitigations.
-This is done because both operating systems and applications cannot always be trusted.
-Depending on the users threat model, a conclusion can be reached using the taxonomy on which mitigations to assume or implement.
-
 \begin{center}
 \begin{figure}[hbtp]
     \makebox[\textwidth]{\includegraphics[width=1.1\paperwidth,angle=270]{categorization}}
@@ -29,3 +21,11 @@ Depending on the users threat model, a conclusion can be reached using the taxon
 \end{figure}
 \afterpage{\clearpage}
 \end{center}
+
+Defenses are similarly organized according to implementation location and cost.
+At the bottom of the stack we have the hardware mitigations, which are further divided into new modules or changed modules.
+Changed modules imply a change to the function of an existing hardware component, but a new module is an entirely new hardware idea.
+Firmware was seperated into it's own category because the implementation effort is drastically different than the implementation of hardware or software.
+At the top, software defenses are split only into two categories, OS and application level mitigations.
+This is done because both operating systems and applications cannot always be trusted.
+Depending on the users threat model, a conclusion can be reached using the taxonomy on which mitigations to assume or implement.

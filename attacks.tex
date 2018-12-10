@@ -80,6 +80,18 @@ a secret value which is then used to index the "attacker array". After the attac
 of cache hits. The psuedocode for this type of attack in Code \ref{code:spectre-v1-pseudo}
 demonstrates the attack concept using a C-like syntax.
 
+% TODO: double check the bpu hashing
+
+The BOOM implementation of this attack echos the Spectre-v1 proof of concept and the psuedocode closely.
+It consists of three different parts. First, a tally buffer is cleared before reading a secret byte.
+This tally buffer is used to keep track of the amount of hits a secret value gets during the measurement
+phase. Next the array to be probed is evicted from the cache (the "attacker array" mentioned above), and
+the attacker trains the BPU to enter the bounds protected area within the victim function. Note that in
+this section, there is an extra loop that puts the branch history in a consistent state since the branch
+history is hashed on update. Finally, the attacker code reads out the probing array through using the
+{\tt rdcycle} instruction and checks if the result is under a hand tuned cache threshold. Full code for 
+this attack is at Code \ref{code:boom-spectre-v1}.
+
 \begin{lstlisting}[style=column-code, label={code:spectre-v1-pseudo}, caption=Psuedocode of Bounds Check Bypass Attack]
 char* secret[] = "SECRET_VALUE"
 char  attackArray[256 * CACHE_BLOCK_SZ]
@@ -105,18 +117,6 @@ int main(void){
 }
 \end{lstlisting}
 
-% TODO: double check the bpu hashing
-
-The BOOM implementation of this attack echos the Spectre-v1 proof of concept and the psuedocode closely.
-It consists of three different parts. First, a tally buffer is cleared before reading a secret byte.
-This tally buffer is used to keep track of the amount of hits a secret value gets during the measurement
-phase. Next the array to be probed is evicted from the cache (the "attacker array" mentioned above), and
-the attacker trains the BPU to enter the bounds protected area within the victim function. Note that in
-this section, there is an extra loop that puts the branch history in a consistent state since the branch
-history is hashed on update. Finally, the attacker code reads out the probing array through using the
-{\tt rdcycle} instruction and checks if the result is under a hand tuned cache threshold. Full code for 
-this attack is at Code \ref{code:boom-spectre-v1}.
-
 \subsection{Branch Target Injection Attack}
 
 This attack exploits the outcome
@@ -128,6 +128,14 @@ Bounds Check Bypass attack, this attack leaks information through the
 cache side channel mentioned in Section \ref{Bounds Check Bypass Attack}. The psuedocode in 
 Code \ref{code:spectre-v2-pseudo} demonstrates the basic principle of the attack using a C-like syntax.
 
+The BOOM implementation of this attack is very similar to the implementation given for
+the Bounds Check Bypass attack listed in Section \ref{Bounds Check Bypass Attack}. One of the main differences
+for this attack is that the attacker has to change both the address of the function being called through
+{\tt jalr} and the passed in value to the victim function throughout the training and the attack run.
+Another difference between the two attacks is that the {\tt fdiv} manipulation is instead done on the target address
+in the main function instead of using {\tt fdiv} on the passed in index in the victim code.
+
+%\begin{minipage}{\linewidth}
 \begin{lstlisting}[style=column-code, label={code:spectre-v2-pseudo}, caption=Psuedocode of Bounds Check Bypass Attack]
 char* secret[] = "SECRET_VALUE"
 char  attackArray[256 * CACHE_BLOCK_SZ]
@@ -157,10 +165,5 @@ int main(void){
   }
 }
 \end{lstlisting}
+%\end{minipage}
 
-The BOOM implementation of this attack is very similar to the implementation given for
-the Bounds Check Bypass attack listed in Section \ref{Bounds Check Bypass Attack}. One of the main differences
-for this attack is that the attacker has to change both the address of the function being called through
-{\tt jalr} and the passed in value to the victim function throughout the training and the attack run.
-Another difference between the two attacks is that the {\tt fdiv} manipulation is instead done on the target address
-in the main function instead of using {\tt fdiv} on the passed in index in the victim code.

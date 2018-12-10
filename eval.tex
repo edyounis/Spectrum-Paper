@@ -111,6 +111,21 @@ All attacks were measured using FireSim, an open-source cycle-accurate, FPGA-acc
     \label{fig:speed-attacks}
 \end{figure}
 
+\subsection{Replicating Speculative Attacks Results}
+
+Overall, the attacks chosen were replicated successfully on the BOOM microarchitecture. A printout
+demonstrating leakage of secret information with the Bounds Check Bypass attack
+is shown in Code \ref{code:spec-attack-printout}. Initial results of the replications
+are promising with around 3.6KB/s for both attacks. Table \ref{tab:spec-attack-results}
+shows the results of the two attacks while Figure \ref{fig:speed-attacks} shows the cycles per secret byte read out.
+These measurements take into account the clearing
+of the tally array before each run, the multiple rounds of training for the BPU,
+the single attack run on the victim, and the time to measure out the secret from the attacker array.
+The cycle times are close to each other because the code shares a similar structure. The main
+differences are around the setup of the {\tt fdiv} manipulation
+and the extra arithmetic in the Branch Target Injection attack where you have to calculate
+both the index and the address for accessing the function and passing the input. 
+
 \begin{lstlisting}[style=column-code, label={code:spec-attack-printout}, caption=Printout of Bounds Check Bypass Attack]
 want(#) =?= 1.(#) 2.( C)
 want(T) =?= 1.(T) 2.(^A)
@@ -138,20 +153,6 @@ want(s) =?= 1.(s) 2.(^D)
 want(t) =?= 1.(t) 2.(^A)
 \end{lstlisting}
 
-\subsection{Replicating Speculative Attacks Results}
-
-Overall, the attacks chosen were replicated successfully on the BOOM microarchitecture. A printout
-demonstrating leakage of secret information with the Bounds Check Bypass attack
-is shown in Code \ref{code:spec-attack-printout}. Initial results of the replications
-are promising with around 3.6KB/s for both attacks. Table \ref{tab:spec-attack-results}
-shows the results of the two attacks while Figure \ref{fig:speed-attacks} shows the cycles per secret byte read out.
-These measurements take into account the clearing
-of the tally array before each run, the multiple rounds of training for the BPU,
-the single attack run on the victim, and the time to measure out the secret from the attacker array.
-The cycle times are close to each other because the code shares a similar structure. The main
-differences are around the setup of the {\tt fdiv} manipulation
-and the extra arithmetic in the Branch Target Injection attack where you have to calculate
-both the index and the address for accessing the function and passing the input. 
 
 \begin{table}
 \centering
