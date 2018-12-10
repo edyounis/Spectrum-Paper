@@ -4,7 +4,7 @@
 
 The two attacks were replicated on the BOOM core with the parameters given
 in Table \ref{tab:boom-core-params}. Note that our configuration employs 4 MSHRs and thus contains a 4-entry SpecBuf.
-We have used the "simple" version of the PNR for the results (Section \ref{Point of No Return}), as the fast version has not yet provided a measurable performance increase.
+We have used the ``simple'' version of the PNR for the results (Section \ref{Point of No Return}), as the fast version has not yet provided a measurable performance increase.
 All attacks were measured using FireSim, an open-source cycle-accurate, FPGA-accelerated scale-out computer system simulation platform \cite{b12}.
 
 \begin{table}
@@ -190,21 +190,21 @@ a defense against the replicated attacks demonstrated. A table of results is sho
 
 \subsubsection{Microbenchmark Explanations and Results}
 
-The first microbenchmark named "Non-speculative load misses to same sets" was used to test how efficient non-speculative loads
+The first microbenchmark named ``Non-speculative load misses to same sets'' was used to test how efficient non-speculative loads
 were when the MSHR was unable to allocated entries for each new load. This microbenchmark is a series of loads that had different
 tags but the same index, thus in BOOM's MSHR, only one entry would be able to be allocated at a time. When using the SpecBuf, the 
 behavior is similar. The main difference is that on each load, the data from cache hierarchy must first fill the MSHR buffer
 before the cache. This causes a small performance decrease for each load. Since our benchmark has 16 loads, this results in a performance decrease of around
 {\tt 16 loads * (CACHE\_LINE\_SZ / DATABUS\_WIDTH)} or {\tt 16 * (64B / 8B) = 128 cycles}.
 
-The second microbenchmark named "Non-speculative load misses to different sets" is similar to the first except that each subsequent
+The second microbenchmark named ``Non-speculative load misses to different sets'' is similar to the first except that each subsequent
 load is accessing a different set in the cache. In the normal version of BOOM, the MSHRs would fill up completely but then stall 
 when full until a prior MSHR entry would be freed (when a previous load is completed). When using the SpecBuf, there is a
 higher performance penalty because the data must fill the MSHR buffer with the cache data before filling the cache. Thus, there 
 is a extra overhead of around 8 cycles for every 4 loads since the MSHR's are allocated waves of 4 and the fill latency to the MSHR
 buffer is {\tt CACHE\_LINE\_SZ / DATABUS\_WIDTH} or {\tt 64B / 8B = 8 cycles}.
 
-The final microbenchmark named "MSHR evicted speculative load miss" is used to test the impact when a load has to be evicted from an 
+The final microbenchmark named ``MSHR evicted speculative load miss'' is used to test the impact when a load has to be evicted from an 
 MSHR due to a potential deadlock condition. For instance, consider two loads which miss to different addresses that map to the same cache index, keeping in mind the limitation discussed in Section \ref{Fully Associative MSHR File}. In the normal version of BOOM, if one of these loads is speculatively issued to an 
 MSHR before a critical load that resolves the speculation, the speculative load will complete and
 write its data to the cache. This will release the MSHR entry it occupied and allow the critical load to complete, resolving the speculation. 

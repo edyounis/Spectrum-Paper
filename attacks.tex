@@ -43,8 +43,8 @@ was chosen to be {\tt N = 4} in order to have a 99\% probability of evicting the
 
 % TODO: double check that the ghr is hashed and folded
 
-The BOOM Branch Predictor Unit (BPU), is split into a single-cycle "next-line predictor" (NLP) and a
-slower but more complicated "backing predictor" (BP). The NLP contains the Branch Target Buffer (BTB) 
+The BOOM Branch Predictor Unit (BPU), is split into a single-cycle ``next-line predictor'' (NLP) and a
+slower but more complicated ``backing predictor'' (BP). The NLP contains the Branch Target Buffer (BTB) 
 where more recent branches are cached alongside their target, a tag of the PC, and more metadata. Additionally,
 the NLP contains the Return Stack Buffer (RSB) which holds the return pointer for a {\tt ret} instruction. The BP
 consists of a large predictor such as a TAGE or GShare predictor which makes a more accurate prediction based on
@@ -75,8 +75,8 @@ during the attack round, the attacker
 gives a value to the victim that fails the bounds check in the victim but during
 speculation is used to retrieve the secret value. This particular attack variant
 uses a cache side channel attack to leak the information by having a passed in value retrieve
-a secret value which is then used to index the "attacker array". After the attack is run, this 
-"attacker array" can be scanned and timed to determine the secret value based on the timings
+a secret value which is then used to index the ``attacker array''. after the attack is run, this 
+``attacker array'' can be scanned and timed to determine the secret value based on the timings
 of cache hits. The psuedocode for this type of attack in Code \ref{code:spectre-v1-pseudo}
 demonstrates the attack concept using a C-like syntax.
 
@@ -85,7 +85,7 @@ demonstrates the attack concept using a C-like syntax.
 The BOOM implementation of this attack echos the Spectre-v1 proof of concept and the psuedocode closely.
 It consists of three different parts. First, a tally buffer is cleared before reading a secret byte.
 This tally buffer is used to keep track of the amount of hits a secret value gets during the measurement
-phase. Next the array to be probed is evicted from the cache (the "attacker array" mentioned above), and
+phase. Next the array to be probed is evicted from the cache (the ``attacker array'' mentioned above), and
 the attacker trains the BPU to enter the bounds protected area within the victim function. Note that in
 this section, there is an extra loop that puts the branch history in a consistent state since the branch
 history is hashed on update. Finally, the attacker code reads out the probing array through using the
