@@ -20,11 +20,13 @@ To implement SpecBuf, we modified cache refills to instead write the refill data
 
 On misspeculation, the misspeculated MSHR entry is flushed along with any load data that has been returned. Only after the load which allocated the MSHR entry is known to be committed is the evicted cache line written back (if dirty) and the new cache line written into the tag and data arrays. This effectively prevents misspeculated loads from altering the state of the cache.
 
-We allow bypassing refill data out of the SpecBuf, before the data is committed. The consequence of this bypassing is that the service time for a cache miss is slightly reduced compared to the original behavior; data can be forwarded out prior to the updating of the cache meta data. However, the total MSHR allocation time is longer than in the original behavior.
+We allow the bypassing of refill data out of SpecBuf, before the data is committed. The consequence of this bypassing is that the service time for a cache miss is slightly reduced compared to the original behavior; data can be forwarded out prior to the updating of the cache data and tags. However, the total MSHR allocation time is longer than in the original behavior.
 
 Another subtlety of the MSHRs is the per-MSHR replay queues. These queues hold consecutive (secondary) load misses to the same cache line while the initial (primary) miss is being handled. Following the acquisition of the requested cache line, our SpecBuf will eagerly empty the replay queues until a store miss reaches the head. Since stores issued to the memory system are always non-speculative, the cache line can be immediately committed at this point.
 
-Implementation of SpecBuf required changes to just under 500 lines of Chisel code, of which 300 resided in the data cache RTL.
+A final subtlety is the presence of an eviction policy which prevents race conditions. This is discussed further in Section Ref{SpecBuf Results}.
+
+Implementation of SpecBuf required changes to just under 500 lines of Chisel code. Of these, 300 lines resided directly in the data cache RTL.
 
 \begin{figure}[h]
   \begin{center}\includegraphics[scale=0.17]{dcache.png}\end{center}
@@ -36,7 +38,7 @@ In the base implementation of the speculation buffer, entries in the buffer are 
 
 This informs the concept of a ``point-of-no-return'' (PNR) in the ROB, in addition to the commit head. While the commit head tracks the next instruction which will commit the architectural state, the PNR tracks instructions which are guaranteed to eventually commit, even if they have not yet completed execution. In other words, the PNR points at the oldest instruction which may cause misspeculated execution; an unsafe instruction, such as a branch which has not yet executed. If an instruction is marked as safe, the PNR will pass it whether or not it has completed executing. We observe that refills in SpecBuf can be committed to the cache as soon as the PNR passes the instruction which triggered them. This reduces pressure on MSHR resources and prevents backpressure on incoming cache requests.
 
-To reduce the performance impacts of SpecBuf, we implemented a PNR in the ROB. Two versions were implemented. The first ``simple-PNR'' will only mark at most one ROB row per cycle as ``guaranteed to commit''. We also implemented a more complex ``fast-PNR'' that can mark an arbitrary number of rows per cycle, essentially ``jumping over'' groups of safe instructions to the oldest incomplete unsafe instruction. These are illustrated in Figure \ref{PNR}: the position of the PNR pointer on the subsequent cycle is shown for both the simple and fast versions.
+To reduce the performance impacts of SpecBuf, we implemented a PNR in the ROB. Two versions were implemented. The first ``simple-PNR'' will only mark at most one ROB row per cycle as ``guaranteed to commit''. We also implemented a more complex ``fast-PNR'' that can mark an arbitrary number of rows per cycle, essentially ``jumping over'' groups of safe instructions to the oldest incomplete unsafe instruction. These are illustrated in Figure \ref{PNR}, which depicts the ROB of a 2-wide BOOM configuration. The position of the PNR pointer on the subsequent cycle is shown for both the simple and fast versions.
 
 \begin{figure}[h]
   \begin{center}\includegraphics[scale=0.17]{rob_pnr.png}\end{center}
