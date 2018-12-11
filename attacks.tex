@@ -89,8 +89,7 @@ phase. Next the array to be probed is evicted from the cache (the ``attacker arr
 the attacker trains the BPU to enter the bounds protected area within the victim function. Note that in
 this section, there is an extra loop that puts the branch history in a consistent state since the branch
 history is hashed on update. Finally, the attacker code reads out the probing array through using the
-{\tt rdcycle} instruction and checks if the result is under a hand tuned cache threshold. Full code for 
-this attack is at Code \ref{code:boom-spectre-v1}.
+{\tt rdcycle} instruction and checks if the result is under a hand tuned cache threshold.
 
 \begin{lstlisting}[style=column-code, label={code:spectre-v1-pseudo}, caption=Psuedocode of Bounds Check Bypass Attack]
 char* secret[] = "SECRET_VALUE"

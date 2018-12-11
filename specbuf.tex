@@ -10,6 +10,10 @@ Similar to how architectural register state is managed in the execution pipeline
 A proposed approach is to hold speculated load data in an ``L0 Speculation buffer'' that can be flushed when misspeculation is detected.
 This prevents misspeculated loads from affecting the state of the cache, while still allowing correctly speculated loads to broadcast their data into the rest of the machine as soon as possible, maintaining performance. If well implemented, such a buffer could slightly improve performance by deferring the eviction of prior contents, slightly reducing the miss latency, and could even be combined with a store coalescing buffer - another useful ``L0 buffer'' structure.
 
+\subsection{Threat Model}
+This speculative buffer is designed to mitigate transient execution attacks that utilize data cache side-channels.
+We will assume an active adversary that is able to read speculated data from the cache. By implementing a speculative buffer that holds uncommited loads, we will circumvent the attacker. The implementation of this buffer itself can be used as a side-channel that will be addressed in Section \ref{specbuf_sidechannel}; however, this is not within our threat model. 
+
 \subsection{BOOM's Data Cache}
 BOOM is currently configured with RocketChip's non-blocking L1 cache \cite{b54}. This cache is single-ported and intended for use with the in-order Rocket core: a consequence is that the cache lacks the concept of speculation. BOOM's pipeline expects the ability to kill any misspeculated operations the cycle after misspeculation is detected. Therefore a data cache ``shim'' structure is used to track operations inside the datacache, killing them upon completion if they were found to be misspeculated. To implement our speculaton buffer, we additionally needed to pass both per-request and global speculative metadata into the cache.
 
